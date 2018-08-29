@@ -15,3 +15,9 @@ export interface IBuildInfos {
     destDir: string;
 }
 
+export const buildConfig: IBuildConfig = {
+    
+};
+
+export const buildInfos: IBuildInfos = {};
+

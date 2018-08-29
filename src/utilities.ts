@@ -1,3 +1,5 @@
+import { write } from "fs";
+
 //-----------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
@@ -143,6 +145,18 @@ export namespace array {
     }
 }
 
+export type LogLevel = "verbose" | "info" | "warning" | "error" | "exception" | "critical";
+
+export interface ILog {
+    write(level: LogLevel, msg: any, ...args: Array<any>): void;
+    verbose(arg0: any, ...args: Array<any>): void;
+    info(arg0: any, ...args: Array<any>): void;
+    warning(arg0: any, ...args: Array<any>): void;
+    error(arg0: any, ...args: Array<any>): void;
+    exception(arg0: any, ...args: Array<any>): void;
+    critical(arg0: any, ...args: Array<any>): void;
+}
+
 declare global {
     interface StringConstructor {
         /**
@@ -153,8 +167,56 @@ declare global {
          */
         format: (...args: Array<any>) => string;
     }
+
+    const log: ILog;
 }
 
 String.format = function (...args: Array<any>): string {
     return string.format(this, args);
 };
+
+class Log implements ILog {
+    verbose: (arg0: any, args: Array<any>) => void = this.write.bind(this, "verbose");
+
+    info: (arg0: any, args: Array<any>) => void = this.write.bind(this, "info");
+
+    warning: (arg0: any, args: Array<any>) => void = this.write.bind(this, "warning");
+
+    error: (arg0: any, args: Array<any>) => void = this.write.bind(this, "error");
+
+    exception: (arg0: any, args: Array<any>) => void = this.write.bind(this, "exception");
+    
+    critical: (arg0: any, args: Array<any>) => void = this.write.bind(this, "critical");
+
+    constructor() {
+        this.warning = this.write.bind(this, "warning");
+    }
+
+    public write(level: LogLevel, arg0: any, ...args: any[]): void {
+        switch (level) {
+            case "info":
+                console.info(arg0, ...args);
+                break;
+
+            case "warning":
+                console.warn(arg0, ...args);
+                break;
+
+            case "error":
+                console.error(arg0, ...args);
+                break;
+
+            case "exception":
+            case "critical":
+                console.exception(arg0, ...args);
+                break;
+
+            case "verbose":
+            default:
+                console.log(arg0, ...args);
+                break;
+        }
+    }
+}
+
+global["log"] = new Log();

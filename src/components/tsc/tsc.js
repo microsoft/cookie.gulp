@@ -6,10 +6,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
-const fs = require("fs");
 const { Transform } = require("stream");
 const path = require("path");
+const fs = require("fs");
 const ts = require("typescript");
+const Vinyl = require("vinyl");
 
 function writeMessage(category, message) {
     let logFunc;
@@ -42,54 +43,59 @@ function logDiagnostic(diagnostic, basePath) {
     }
 }
 
-function createCompiler(options) {
-    /**
-     * @type {Array<string>}
-     */
-    const fileNames = [];
+/**
+ * Create a TypeScript compiling stream.
+ * @param {import("typescript").CompilerOptions} options Compiler options.
+ */
+exports.compile = function (options) {
+    /** @type {{[filePath: string]: import("vinyl")}} */
+    const files = {};
 
     return new Transform({
         objectMode: true,
         flush(callback) {
-            const program = ts.createProgram(fileNames, options);
+            const program = ts.createProgram(Object.values(files).map((file) => file.path), options);
             const emitResult = program.emit();
             const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
             const basePath = path.resolve(".");
-        
+
             let hasError = false;
-        
+
             allDiagnostics.forEach(diagnostic => {
                 hasError |= diagnostic.category === ts.DiagnosticCategory.Error;
                 logDiagnostic(diagnostic, basePath);
             });
-        
+
             if (hasError || emitResult.emitSkipped) {
                 callback(new Error("Typescript compilation failed."));
-            } else {
-                callback();
+                return;
             }
+
+            if (emitResult.emittedFiles && emitResult.emittedFiles.length > 0) {
+                emitResult.emittedFiles.forEach((emittedFilePath) => {
+                    const emittedFileId = path.relative(options.outDir || ".", emittedFilePath);
+
+                    if (emittedFileId in files) {
+                        files[emittedFileId].path = emittedFilePath;
+
+                        this.push(files[emittedFileId]);
+                    } else {
+                        this.push(new Vinyl({
+                            path: emittedFilePath,
+                            contents: fs.createReadStream(emittedFilePath)
+                        }));
+                    }
+                });
+            }
+
+            callback();
         },
+        /**
+         * @param {import("vinyl")} chunk
+         */
         transform(chunk, encoding, callback) {
-            fileNames.push(chunk.path);
+            files[chunk.relative] = chunk;
             callback();
         }
     });
-}
-
-function compileWithTsConfig() {
-    
-}
-
-/**
- * Compile supplied typescript files.
- * @param {import("typescript").CompilerOptions} options Compiler options.
- * @param {Array<string>} fileNames Typescript files to compile.
- * @param
- */
-exports.compile = function (options) {
-    if (options) {
-        return createCompiler(options);
-    } else {
-        return compileWithTsConfig();
-    }
 }

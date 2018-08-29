@@ -3,11 +3,10 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-import { CompilerOptions, Diagnostic } from "typescript";
+import { CompilerOptions } from "typescript";
 
 declare namespace tsc {
-    function compile(options: CompilerOptions, files?: Array<string>): void;
-    function logDiagnostic(diagnostic: Diagnostic, basePath?: string): void;
+    function compile(options?: CompilerOptions): void;
 }
 
 export = tsc;

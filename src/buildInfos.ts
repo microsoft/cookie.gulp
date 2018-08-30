@@ -5,19 +5,43 @@
 
 import * as fs from "fs";
 
-export interface IBuildConfig {
-    readonly srcDir?: string;
-    readonly destDir?: string;
+const buildInfosJsonPath = "./buildinfos.json";
+const packageJsonPath = "./package.json";
+
+function loadBuildInfosJson(): Readonly<IBuildInfos> {
+    if (!fs.existsSync(buildInfosJsonPath)) {
+        return {};
+    }
+
+    return JSON.parse(fs.readFileSync(buildInfosJsonPath, "utf8"));
 }
 
-export interface IBuildInfos {
-    srcDir: string;
-    destDir: string;
+function loadPackageJson(): Readonly<IPackageConfig> {
+    if (!fs.existsSync(packageJsonPath)) {
+        return {};
+    }
+
+    return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 }
 
-export const buildConfig: IBuildConfig = {
-    
-};
+function generateBuildInfos(): IBuildInfos {
+    const buildInfos: IBuildInfos = JSON.parse(JSON.stringify(buildInfosJson));
 
-export const buildInfos: IBuildInfos = {};
+    log.info("[Begin]", "Generating runtime buildinfos ...");
+
+    if (buildInfos.buildNumber === "*") {
+        log.info("Read", "evn:BUILD_BUILDNUMBER", "=", process.env["BUILD_BUILDNUMBER"]);
+        log.info("Read", "package.json:version", "=", packageJson.version);
+        buildInfos.buildNumber = process.env["BUILD_BUILDNUMBER"] || packageJson.version;
+        log.info("Write", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
+    }
+
+    log.info("[Ended]", "Generating runtime buildinfos.");
+
+    return buildInfos;
+}
+
+export const packageJson = loadPackageJson();
+export const buildInfosJson = loadBuildInfosJson();
+export const buildInfos = generateBuildInfos();
 

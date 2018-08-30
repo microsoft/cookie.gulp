@@ -1,5 +1,3 @@
-import { write } from "fs";
-
 //-----------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
@@ -118,7 +116,7 @@ export namespace string {
                 let argIndex = argIndexStr.length === 0 ? matchIndex : parseInt(argIndexStr, 10);
 
                 if (isNaN(argIndex) || argIndex < 0 || argIndex >= args.length) {
-                    throw new Error(`Referenced arg index, '${argIndexStr}',is out of range of the args.`);
+                    throw new Error(`Referenced arg index, "${argIndexStr}",is out of range of the args.`);
                 }
 
                 return args[argIndex];
@@ -145,18 +143,6 @@ export namespace array {
     }
 }
 
-export type LogLevel = "verbose" | "info" | "warning" | "error" | "exception" | "critical";
-
-export interface ILog {
-    write(level: LogLevel, msg: any, ...args: Array<any>): void;
-    verbose(arg0: any, ...args: Array<any>): void;
-    info(arg0: any, ...args: Array<any>): void;
-    warning(arg0: any, ...args: Array<any>): void;
-    error(arg0: any, ...args: Array<any>): void;
-    exception(arg0: any, ...args: Array<any>): void;
-    critical(arg0: any, ...args: Array<any>): void;
-}
-
 declare global {
     interface StringConstructor {
         /**
@@ -168,55 +154,30 @@ declare global {
         format: (...args: Array<any>) => string;
     }
 
-    const log: ILog;
+    interface Date {
+        /**
+         * 
+         * @returns {string} The locale date in ISO format.
+         */
+        toLocaleISOString: () => string;
+    }
 }
 
 String.format = function (...args: Array<any>): string {
     return string.format(this, args);
 };
 
-class Log implements ILog {
-    verbose: (arg0: any, args: Array<any>) => void = this.write.bind(this, "verbose");
-
-    info: (arg0: any, args: Array<any>) => void = this.write.bind(this, "info");
-
-    warning: (arg0: any, args: Array<any>) => void = this.write.bind(this, "warning");
-
-    error: (arg0: any, args: Array<any>) => void = this.write.bind(this, "error");
-
-    exception: (arg0: any, args: Array<any>) => void = this.write.bind(this, "exception");
-    
-    critical: (arg0: any, args: Array<any>) => void = this.write.bind(this, "critical");
-
-    constructor() {
-        this.warning = this.write.bind(this, "warning");
-    }
-
-    public write(level: LogLevel, arg0: any, ...args: any[]): void {
-        switch (level) {
-            case "info":
-                console.info(arg0, ...args);
-                break;
-
-            case "warning":
-                console.warn(arg0, ...args);
-                break;
-
-            case "error":
-                console.error(arg0, ...args);
-                break;
-
-            case "exception":
-            case "critical":
-                console.exception(arg0, ...args);
-                break;
-
-            case "verbose":
-            default:
-                console.log(arg0, ...args);
-                break;
-        }
-    }
+function padLeft(num: number, length: number): string {
+    return num.toString().padStart(length, "0");
 }
 
-global["log"] = new Log();
+Date.prototype.toLocaleISOString = function (): string {
+    return this.getUTCFullYear() +
+        "-" + padLeft(this.getMonth(), 2) +
+        "-" + padLeft(this.getDate(), 2) +
+        "T" + padLeft(this.getHours(), 2) +
+        ":" + padLeft(this.getMinutes(), 2) +
+        ":" + padLeft(this.getSeconds(), 2) +
+        "." + (this.getMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+        (this.getTimezoneOffset() === 0 ? "Z" : "");
+};

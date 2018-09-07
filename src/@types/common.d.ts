@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
+interface Error {
+    code?: string;
+}
+
 interface IDictionary<TValue> {
     [key: string]: TValue;
 }
@@ -17,12 +21,32 @@ interface IBuildTargetConfig {
     archs: Array<NodeJS.Architecture>;
 }
 
+type ExecutionModel = "parallel" | "series";
+
+interface IBuildTaskGroup {
+    executionModel: ExecutionModel;
+    tasks: Array<string | IBuildTaskGroup>;
+}
+
+interface IBuildTasksArray extends Array<string | IBuildTaskGroup | IBuildTasksArray> { }
+
+type BuildTaskTree = IBuildTasksArray | IBuildTaskGroup;
+
+interface IBuildTaskDictionary {
+    [taskName: string]: BuildTaskTree;
+
+    build?: BuildTaskTree;
+    publish?: BuildTaskTree;
+}
+
 interface IBuildInfos {
     productName?: string;
     description?: string;
     copyright?: string;
 
     buildNumber?: string;
+
+    tasks?: IBuildTaskDictionary;
 
     targets?: Array<IBuildTargetConfig>;
     paths?: IBuildPaths;

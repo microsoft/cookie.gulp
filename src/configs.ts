@@ -5,6 +5,8 @@
 
 import * as fs from "fs";
 
+import * as log from "./log";
+
 const buildInfosJsonPath = "./buildinfos.json";
 const packageJsonPath = "./package.json";
 
@@ -43,5 +45,5 @@ function generateBuildInfos(): IBuildInfos {
 
 export const packageJson = loadPackageJson();
 export const buildInfosJson = loadBuildInfosJson();
-export const buildInfos = generateBuildInfos();
 
+export const buildInfos = generateBuildInfos();

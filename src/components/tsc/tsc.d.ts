@@ -4,9 +4,10 @@
 //-----------------------------------------------------------------------------
 
 import { CompilerOptions } from "typescript";
+import { Transform } from "stream";
 
 declare namespace tsc {
-    function compile(options?: CompilerOptions): void;
+    function compile(options?: CompilerOptions): NodeJS.WritableStream & NodeJS.ReadableStream;
 }
 
 export = tsc;

@@ -5,6 +5,4 @@
 
 import * as gulp from "gulp";
 
-gulp.task("build", () => {
-
-});
+gulp.task("build", gulp.parallel("compile@typescript"));

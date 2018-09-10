@@ -12,11 +12,11 @@
         "outDir": "build"
     },
     "exclude": [
-        "build/",
-        "publish/",
-        "node_modules/"
+        "build/**/*",
+        "publish/**/*",
+        "node_modules/**/*"
     ],
     "include": [
-        "**/*.ts"
+        "src/**/*.ts"
     ]
 }

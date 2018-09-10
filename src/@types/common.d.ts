@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 interface Error {
-    code?: string;
+    code?: string | number;
 }
 
 interface IDictionary<TValue> {

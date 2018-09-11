@@ -42,7 +42,7 @@ gulp.task("copy-files", () => {
     }
 
     if (true === utils.object.getPropertyValue(configs.buildInfos, "taskConfigs.copy-files.globs", true)) {
-        globs.push(...DefaultGlobs);
+        globs = DefaultGlobs.concat(globs);
     }
 
     return gulp

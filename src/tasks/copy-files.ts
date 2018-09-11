@@ -11,13 +11,18 @@ import * as globUtils from "../glob-utils";
 
 const DefaultGlobs: Array<string> = [
     "**/*",
-    "!**/CMakeLists",
-    "!**/CMakeLists.*",
+    "!**/*.tsx",
+    "!**/*.ts",
+    "!**/*.scss",
+    "!**/*.sass",
+    "!**/*.less",
     "!**/*.vbproj",
     "!**/*.csproj",
     "!**/*.vcxproj",
     "!**/*.sln",
     "!**/*.proj",
+    "!**/CMakeLists",
+    "!**/CMakeLists.*",
     "!**/*.xaml",
     "!**/*.fs",
     "!**/*.fsi",
@@ -27,12 +32,7 @@ const DefaultGlobs: Array<string> = [
     "!**/*.cpp",
     "!**/*.c",
     "!**/*.cc",
-    "!**/*.h",
-    "!**/*.scss",
-    "!**/*.sass",
-    "!**/*.less",
-    "!**/*.tsx",
-    "!**/*.ts"];
+    "!**/*.h"];
 
 gulp.task("copy-files", () => {
     let globs: Array<string> = utils.object.getPropertyValue(configs.buildInfos, "taskConfigs.copy-files.globs") || [];
@@ -46,6 +46,6 @@ gulp.task("copy-files", () => {
     }
 
     return gulp
-        .src(globUtils.formGlobs(...globs))
+        .src(globUtils.formGlobs(...globs), { dot: true })
         .pipe(gulp.dest(configs.buildInfos.paths.destDir));
 });

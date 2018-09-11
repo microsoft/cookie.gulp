@@ -6,6 +6,7 @@
 "use strict";
 
 const gulp = require("gulp");
+const del = require("del");
 
 /**
  * @typedef ITsConfig 
@@ -72,6 +73,13 @@ gulp.task("compile:typescripts", () => {
         .pipe(gulp.dest("build"));
 });
 
-gulp.task("copy-files", () => gulp.src("src/**/*", "!src/**/*.ts").pipe(gulp.dest("build", { overwrite: true })));
+gulp.task("copy-files",
+    () => gulp
+        .src(["src/**/*", "!src/**/*.ts", "src/**/*.d.ts"], { dot: true })
+        .pipe(gulp.dest("build", { overwrite: true })));
 
 gulp.task("build", gulp.series("compile:typescripts", "copy-files"));
+
+gulp.task("clean", () => del("build/"));
+
+gulp.task("clean-build", gulp.series("clean", "build"));

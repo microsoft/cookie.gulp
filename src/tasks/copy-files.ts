@@ -9,49 +9,40 @@ import * as utils from "../utilities";
 import * as configs from "../configs";
 import * as globUtils from "../glob-utils";
 
-const defaultGlobs: Array<string> = [
-    "**/*.css",
-    "**/*.eot",
-    "**/*.svg",
-    "**/*.ttf",
-    "**/*.woff",
-
-    "**/*.png",
-    "**/*.jpg",
-    "**/*.jpeg",
-    "**/*.bmp",
-    "**/*.ico",
-    "**/*.icns",
-    "**/*.gif",
-
-    "**/*.pem",
-    "**/*.pfx",
-    "**/*.cert",
-    "**/*.cer",
-    "**/*.key",
-
-    "**/*.ps1",
-    "**/*.cmd",
-    "**/*.sh",
-    "**/*.bat",
-    "**/*.txt",
-    "**/*.js",
-    "**/*.json",
-    "**/*.cson",
-    "**/*.yml",
-    "**/*.yaml",
-    "**/*.xml",
-    "**/*.htm",
-    "**/*.html"];
+const DefaultGlobs: Array<string> = [
+    "**/*",
+    "!**/CMakeLists",
+    "!**/CMakeLists.*",
+    "!**/*.vbproj",
+    "!**/*.csproj",
+    "!**/*.vcxproj",
+    "!**/*.sln",
+    "!**/*.proj",
+    "!**/*.xaml",
+    "!**/*.fs",
+    "!**/*.fsi",
+    "!**/*.java",
+    "!**/*.vb",
+    "!**/*.cs",
+    "!**/*.cpp",
+    "!**/*.c",
+    "!**/*.cc",
+    "!**/*.h",
+    "!**/*.scss",
+    "!**/*.sass",
+    "!**/*.less",
+    "!**/*.tsx",
+    "!**/*.ts"];
 
 gulp.task("copy-files", () => {
-    let globs: Array<string> = utils.object.getPropertyValue(configs.buildInfos, "taskConfigs.copy-files.globs");
+    let globs: Array<string> = utils.object.getPropertyValue(configs.buildInfos, "taskConfigs.copy-files.globs") || [];
 
-    if (utils.isNullOrUndefined(globs)) {
-        globs = defaultGlobs;
-
-    } else if (!Array.isArray(globs)) {
+    if (!Array.isArray(globs)) {
         throw new Error("Invalid value for buildinfos.taskConfigs.copy-files.globs. This value must be an array of string.");
+    }
+
+    if (true === utils.object.getPropertyValue(configs.buildInfos, "taskConfigs.copy-files.globs", true)) {
+        globs.push(...DefaultGlobs);
     }
 
     return gulp

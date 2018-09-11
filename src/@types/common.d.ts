@@ -41,7 +41,8 @@ interface IBuildTaskDictionary {
 }
 
 interface ICopyTaskConfig {
-    globs: Array<string>;
+    includeDefaults?: boolean;
+    globs?: Array<string>;
 }
 
 interface IBuildTaskConfigDictionary extends IDictionary<any> {

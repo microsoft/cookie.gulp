@@ -146,17 +146,18 @@ export namespace array {
 export namespace object {
     /**
      * Travel the object against the property path and return the value.
-     * @param target Target the object to travel.
-     * @param propertyPath The property path to travel along.
+     * @param {any} target Target the object to travel.
+     * @param {string} propertyPath The property path to travel along.
+     * @param defaultValue The default value to return if the value doesn't exist.
      * @returns The value of the target property.
      */
-    export function getPropertyValue<T>(target: any, propertyPath: string): T {
+    export function getPropertyValue<T>(target: any, propertyPath: string, defaultValue: T = undefined): T {
         if (string.isNullUndefinedOrWhitespaces(propertyPath)) {
             throw new Error("Invalid propertyPath.");
         }
 
         if (isNullOrUndefined(target)) {
-            return undefined;
+            return defaultValue;
         }
 
         const propertyNames = propertyPath.split(".");
@@ -164,7 +165,7 @@ export namespace object {
 
         for (const name of propertyNames) {
             if (targetObj === undefined || targetObj === null) {
-                return undefined;
+                return defaultValue;
             } else {
                 targetObj = targetObj[name];
             }

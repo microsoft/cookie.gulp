@@ -55,7 +55,7 @@ function toGlobs(tsconfig) {
     return globs;
 }
 
-gulp.task("compile:typescripts", function () {
+gulp.task("compile:typescripts", () => {
     const tsc = require("./src/components/tsc");
     const ts = require("typescript");
     const tsconfig = loadTsConfigJson();
@@ -72,4 +72,6 @@ gulp.task("compile:typescripts", function () {
         .pipe(gulp.dest("build"));
 });
 
-gulp.task("build", gulp.series("compile:typescripts"));
+gulp.task("copy-files", () => gulp.src("src/**/*", "!src/**/*.ts").pipe(gulp.dest("build", { overwrite: true })));
+
+gulp.task("build", gulp.series("compile:typescripts", "copy-files"));

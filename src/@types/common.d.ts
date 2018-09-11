@@ -13,7 +13,8 @@ interface IDictionary<TValue> {
 
 interface IBuildPaths {
     [pathName: string]: string;
-    destDir?: string;
+    intermediateDir?: string;
+    destDir: string;
 }
 
 interface IBuildTargetConfig {
@@ -39,6 +40,14 @@ interface IBuildTaskDictionary {
     publish?: BuildTaskTree;
 }
 
+interface ICopyTaskConfig {
+    globs: Array<string>;
+}
+
+interface IBuildTaskConfigDictionary extends IDictionary<any> {
+    "copy-files"?: ICopyTaskConfig;
+}
+
 interface IBuildInfos {
     productName?: string;
     description?: string;
@@ -47,9 +56,19 @@ interface IBuildInfos {
     buildNumber?: string;
 
     tasks?: IBuildTaskDictionary;
+    taskConfigs?: IBuildTaskConfigDictionary;
 
     targets?: Array<IBuildTargetConfig>;
     paths?: IBuildPaths;
+}
+
+type DepType = "prod" | "dev" | "optional" | "bundle";
+
+interface IDynamicDependency {
+    version: string;
+    depTypes: Array<DepType>;
+    archs: Array<NodeJS.Architecture>;
+    platforms: Array<NodeJS.Platform>;
 }
 
 interface IPackageConfig {
@@ -67,4 +86,6 @@ interface IPackageConfig {
     peerDependencies?: IDictionary<string>;
     bundleDependencies?: IDictionary<string>;
     extensionDependencies?: IDictionary<string>;
+
+    dynamicDependencies?: IDictionary<IDynamicDependency>;
 }

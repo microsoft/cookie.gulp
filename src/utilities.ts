@@ -143,6 +143,37 @@ export namespace array {
     }
 }
 
+export namespace object {
+    /**
+     * Travel the object against the property path and return the value.
+     * @param target Target the object to travel.
+     * @param propertyPath The property path to travel along.
+     * @returns The value of the target property.
+     */
+    export function getPropertyValue<T>(target: any, propertyPath: string): T {
+        if (string.isNullUndefinedOrWhitespaces(propertyPath)) {
+            throw new Error("Invalid propertyPath.");
+        }
+
+        if (isNullOrUndefined(target)) {
+            return undefined;
+        }
+
+        const propertyNames = propertyPath.split(".");
+        let targetObj = target;
+
+        for (const name of propertyNames) {
+            if (targetObj === undefined || targetObj === null) {
+                return undefined;
+            } else {
+                targetObj = targetObj[name];
+            }
+        }
+
+        return targetObj;
+    }
+}
+
 declare global {
     interface StringConstructor {
         /**

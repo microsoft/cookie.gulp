@@ -10,6 +10,7 @@ import * as path from "path";
 import * as utils from "./utilities";
 import * as configs from "./configs";
 import * as undertaker from "undertaker";
+import { installDynamicDependencies } from "./dynamic-dependency";
 
 function generateTask(taskTree: BuildTaskTree): undertaker.TaskFunction {
     if (utils.isNullOrUndefined(taskTree)) {
@@ -69,6 +70,9 @@ function importTasks(tasksPath: string = "./tasks"): void {
 
 // Import pre-defined tasks.
 importTasks();
+
+// Install dynamic dependencies.
+installDynamicDependencies();
 
 // Check if tasks are configured.
 if (configs.buildInfos.tasks) {

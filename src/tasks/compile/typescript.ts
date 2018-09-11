@@ -6,6 +6,7 @@
 import * as gulp from "gulp";
 import * as ts from "typescript";
 import * as fs from "fs";
+import * as tmp from "tmp";
 
 import * as tsc from "../../components/tsc";
 import * as utils from "../../utilities";
@@ -27,6 +28,10 @@ function loadTsConfigJson(): Readonly<ITsConfig> {
     }
 
     return JSON.parse(fs.readFileSync("./tsconfig.json", "utf8"));
+}
+
+function writeTsConfigJson(tsconfig: Readonly<ITsConfig>): void {
+    fs.writeFileSync("./tsconfig.json", JSON.stringify(tsconfig, undefined, 4), "utf8");
 }
 
 /**
@@ -56,6 +61,13 @@ function toGlobs(tsconfig: ITsConfig): Array<string> {
 
 gulp.task("compile@typescript", () => {
     const tsconfig = loadTsConfigJson();
+
+    if (utils.string.isNullUndefinedOrWhitespaces(tsconfig.compilerOptions.outDir)) {
+        log.warning("tsconfig.json:outDir is not specified. A temp directory is created and assigned to it.");
+        tsconfig.compilerOptions.outDir = tmp.dirSync().name;
+        writeTsConfigJson(tsconfig);
+    }
+
     const compilerOptionsParseResult = ts.convertCompilerOptionsFromJson(tsconfig.compilerOptions, undefined);
 
     if (compilerOptionsParseResult.errors && compilerOptionsParseResult.errors.length > 0) {

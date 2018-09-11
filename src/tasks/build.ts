@@ -5,4 +5,4 @@
 
 import * as gulp from "gulp";
 
-gulp.task("build", gulp.parallel("compile@typescript"));
+gulp.task("build", gulp.parallel("compile@typescript", "copy-files"));

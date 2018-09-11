@@ -6,6 +6,7 @@
 import * as fs from "fs";
 
 import * as log from "./log";
+import * as utils from "./utilities";
 
 const buildInfosJsonPath = "./buildinfos.json";
 const packageJsonPath = "./package.json";
@@ -36,6 +37,10 @@ function generateBuildInfos(): IBuildInfos {
         log.info("Read", "package.json:version", "=", packageJson.version);
         buildInfos.buildNumber = process.env["BUILD_BUILDNUMBER"] || packageJson.version;
         log.info("Write", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
+    }
+
+    if (!buildInfos.paths || utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.destDir)) {
+        throw new Error(`${buildInfosJsonPath}:paths.destDir must be specified.`);
     }
 
     log.info("[Ended]", "Generating runtime buildinfos.");

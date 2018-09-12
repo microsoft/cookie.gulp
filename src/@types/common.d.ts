@@ -14,11 +14,25 @@ interface IDictionary<TValue> {
 interface IBuildPaths {
     [pathName: string]: string;
     intermediateDir?: string;
-    destDir: string;
+    publishDir?: string;
+    buildDir?: string;
+}
+
+interface IBuildTargetConfigCollection {
+    [platform: string]: IBuildTargetConfig;
+
+    aix?: IBuildTargetConfig;
+    android?: IBuildTargetConfig;
+    darwin?: IBuildTargetConfig;
+    freebsd?: IBuildTargetConfig;
+    linux?: IBuildTargetConfig;
+    openbsd?: IBuildTargetConfig;
+    sunos?: IBuildTargetConfig;
+    win32?: IBuildTargetConfig;
+    cygwin?: IBuildTargetConfig;
 }
 
 interface IBuildTargetConfig {
-    platform: NodeJS.Platform;
     archs: Array<NodeJS.Architecture>;
 }
 
@@ -45,8 +59,21 @@ interface ICopyTaskConfig {
     globs?: Array<string>;
 }
 
+interface IMsiTaskConfig {
+    autoGenerateComponentGuids?: boolean;
+    generateGuidsNow?: boolean;
+    keepEmptyFolders?: boolean;
+    rootDirectory?: string;
+    componentGroupName?: string;
+    xsltTemplatePath?: string;
+    wxsGlobs?: Array<string>;
+    variables?: IDictionary<string>;
+    spdb?: boolean;
+}
+
 interface IBuildTaskConfigDictionary extends IDictionary<any> {
     "copy-files"?: ICopyTaskConfig;
+    "publish@msi"?: IMsiTaskConfig;
 }
 
 interface IBuildInfos {
@@ -59,7 +86,7 @@ interface IBuildInfos {
     tasks?: IBuildTaskDictionary;
     taskConfigs?: IBuildTaskConfigDictionary;
 
-    targets?: Array<IBuildTargetConfig>;
+    targets?: IBuildTargetConfigCollection;
     paths?: IBuildPaths;
 }
 

@@ -46,7 +46,7 @@ function logDiagnostic(diagnostic, basePath) {
 /**
  * Create a TypeScript compiling stream.
  * @param {import("typescript").CompilerOptions} options Compiler options.
- * @returns {NodeJS.ReadableStream & NodeJS.WritableStream} 
+ * @returns {Readable & Writable} 
  */
 exports.compile = function (options) {
     /** @type {{[filePath: string]: import("vinyl")}} */

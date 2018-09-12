@@ -30,20 +30,51 @@ function loadPackageJson(): Readonly<IPackageConfig> {
 function generateBuildInfos(): IBuildInfos {
     const buildInfos: IBuildInfos = JSON.parse(JSON.stringify(buildInfosJson));
 
-    log.info("[Begin]", "Generating runtime buildinfos ...");
+    log.info("Config", "BuildInfos", "Generating runtime buildinfos ...");
 
     if (buildInfos.buildNumber === "*") {
-        log.info("Read", "evn:BUILD_BUILDNUMBER", "=", process.env["BUILD_BUILDNUMBER"]);
-        log.info("Read", "package.json:version", "=", packageJson.version);
+        log.info("Config", "BuildInfos", "evn:BUILD_BUILDNUMBER", "=", process.env["BUILD_BUILDNUMBER"]);
+        log.info("Config", "BuildInfos", "package.json:version", "=", packageJson.version);
         buildInfos.buildNumber = process.env["BUILD_BUILDNUMBER"] || packageJson.version;
-        log.info("Write", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
+        log.info("Config", "BuildInfos", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
     }
 
-    if (!buildInfos.paths || utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.destDir)) {
-        throw new Error(`${buildInfosJsonPath}:paths.destDir must be specified.`);
+    if (!buildInfos.paths) {
+        buildInfos.paths = Object.create(null);
     }
 
-    log.info("[Ended]", "Generating runtime buildinfos.");
+    if (!buildInfos.targets) {
+        buildInfos.targets = Object.create(null);
+    }
+
+    // buildDir
+    if (utils.isNullOrUndefined(buildInfos.paths.buildDir)) {
+        buildInfos.paths.buildDir = "/build/out";
+    }
+
+    if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.buildDir)) {
+        throw new Error(`${buildInfosJsonPath}:paths.buildDir must be specified.`);
+    }
+
+    // publishDir
+    if (utils.isNullOrUndefined(buildInfos.paths.publishDir)) {
+        buildInfos.paths.publishDir = "/publish";
+    }
+
+    if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.publishDir)) {
+        throw new Error(`${buildInfosJsonPath}:paths.publishDir must be specified.`);
+    }
+
+    // intermediateDir
+    if (utils.isNullOrUndefined(buildInfos.paths.intermediateDir)) {
+        buildInfos.paths.intermediateDir = "/build/tmp";
+    }
+
+    if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.intermediateDir)) {
+        throw new Error(`${buildInfosJsonPath}:paths.intermediateDir must be specified.`);
+    }
+
+    log.info("Config", "BuildInfos", "Generating runtime buildinfos.");
 
     return buildInfos;
 }

@@ -47,5 +47,5 @@ gulp.task("copy-files", () => {
 
     return gulp
         .src(globUtils.formGlobs(...globs), { dot: true })
-        .pipe(gulp.dest(configs.buildInfos.paths.destDir));
+        .pipe(gulp.dest(configs.buildInfos.paths.buildDir));
 });

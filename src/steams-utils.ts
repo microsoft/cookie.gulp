@@ -5,12 +5,12 @@
 
 import { Readable, Writable, Transform } from "stream";
 
-export function chain(...streams: Array<Readable & Writable>): Readable & Writable {
+export function chain(...streams: Array<Readable & Writable | NodeJS.ReadWriteStream>): Readable & Writable {
     if (!Array.isArray(streams) || streams.length <= 0) {
         throw new Error("At least one stream must be provided.");
     }
 
-    let lastStream: Readable & Writable;
+    let lastStream: Readable & Writable | NodeJS.ReadWriteStream;
 
     for (const stream of streams) {
         lastStream = lastStream ? lastStream.pipe(stream) : stream;
@@ -25,9 +25,9 @@ export function chain(...streams: Array<Readable & Writable>): Readable & Writab
         }
     });
 
-    lastStream.pipe(new Transform({
+    lastStream.pipe(new Writable({
         objectMode: true,
-        transform(chunk, encoding, callback): void {
+        write(chunk, encoding, callback): void {
             proxy.push(chunk);
             callback();
         }

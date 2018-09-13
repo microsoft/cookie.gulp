@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-import * as gulp from "gulp";
 import * as ts from "typescript";
 import * as fs from "fs";
 import * as tmp from "tmp";
@@ -11,8 +10,6 @@ import * as tmp from "tmp";
 import * as configs from "../../configs";
 import * as tsc from "../../components/tsc";
 import * as utils from "../../utilities";
-import * as gulpUtils from "../../glob-utils";
-import { buildInfos } from "../../configs";
 import * as log from "../../log";
 
 interface ITsConfig {
@@ -31,32 +28,7 @@ function loadTsConfigJson(): Readonly<ITsConfig> {
     return JSON.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 }
 
-/**
- * The the globs for the typescript files.
- * @returns {Array.<string>} The globs for the typescript files.
- */
-function toGlobs(tsconfig: ITsConfig): Array<string> {
-    /** @type {Array.<string>} */
-    const globs = [];
-
-    // Include
-    if (Array.isArray(tsconfig.include)) {
-        globs.push(...tsconfig.include);
-    } else if (!utils.isNullOrUndefined(tsconfig.include)) {
-        throw new Error("tsconfig.include must be an array!");
-    }
-
-    // Exclude
-    if (Array.isArray(tsconfig.exclude)) {
-        tsconfig.exclude.forEach((pattern) => globs.push("!" + pattern));
-    } else if (!utils.isNullOrUndefined(tsconfig.include)) {
-        throw new Error("tsconfig.exclude must be an array!");
-    }
-
-    return gulpUtils.formGlobs(...globs);
-}
-
-gulp.task("compile@typescript", () => {
+export = () => {
     const tsconfig = loadTsConfigJson();
     let tempDir: tmp.ITempObject;
 
@@ -73,13 +45,5 @@ gulp.task("compile@typescript", () => {
         throw new Error("Failed to parse tsconfig.json:compilerOptions.");
     }
 
-    return gulp.src(toGlobs(tsconfig))
-        .pipe(tsc.compile(compilerOptionsParseResult.options))
-        .pipe(gulp.dest(buildInfos.paths.buildDir))
-        .once("close",
-            () => {
-                if (tempDir) {
-                    tempDir.removeCallback();
-                }
-            });
-});
+    return tsc.compile(compilerOptionsParseResult.options);
+};

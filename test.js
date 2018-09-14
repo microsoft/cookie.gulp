@@ -1,5 +1,5 @@
 const gulp = require("gulp");
-const { Transform, Duplex } = require("stream");
+const { Transform, PassThrough } = require("stream");
 
 const subStream = new Transform({
     objectMode: true,
@@ -49,5 +49,8 @@ function chain(stream1, stream2) {
     return proxy;
 }
 
-gulp.src("src/@types/*.d.ts", { dot: true }).pipe(gulp.dest("tmp1"));
-gulp.src("src/@types/*.d.ts", { dot: true }).pipe(chain(subStream, childStream)).pipe(gulp.dest("tmp"));
+const source = gulp.src("src/@types/*.d.ts", { dot: true }).pipe(new PassThrough({ objectMode: true }));
+
+source.pipe(gulp.dest("tmp1"));
+source.pipe(gulp.dest("tmp2"));
+source.pipe(gulp.dest("tmp3"));

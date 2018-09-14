@@ -32,6 +32,9 @@ function generateBuildInfos(): IBuildInfos {
 
     log.info("Config", "BuildInfos", "Generating runtime buildinfos ...");
 
+    /**
+     * buildNumber
+     */
     if (buildInfos.buildNumber === "*") {
         log.info("Config", "BuildInfos", "evn:BUILD_BUILDNUMBER", "=", process.env["BUILD_BUILDNUMBER"]);
         log.info("Config", "BuildInfos", "package.json:version", "=", packageJson.version);
@@ -39,6 +42,9 @@ function generateBuildInfos(): IBuildInfos {
         log.info("Config", "BuildInfos", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
     }
 
+    /**
+     * paths
+     */
     if (!buildInfos.paths) {
         buildInfos.paths = Object.create(null);
     }
@@ -72,6 +78,27 @@ function generateBuildInfos(): IBuildInfos {
 
     if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.intermediateDir)) {
         throw new Error(`${buildInfosJsonPath}:paths.intermediateDir must be specified.`);
+    }
+
+    /**
+     * configs
+     */
+    buildInfos.configs = buildInfos.configs || Object.create(null);
+    buildInfos.configs.tasks = buildInfos.configs.tasks || Object.create(null);
+    buildInfos.configs.processors = buildInfos.configs.processors || Object.create(null);
+
+    /**
+     * targets
+     */
+    if (!buildInfos.targets) {
+        buildInfos.targets = [];
+    }
+
+    /**
+     * tasks
+     */
+    if (!buildInfos.tasks) {
+        buildInfos.tasks = Object.create(null);
     }
 
     log.info("Config", "BuildInfos", "Generating runtime buildinfos.");

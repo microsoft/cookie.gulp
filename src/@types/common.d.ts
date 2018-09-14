@@ -11,85 +11,6 @@ interface IDictionary<TValue> {
     [key: string]: TValue;
 }
 
-interface IBuildPaths {
-    [pathName: string]: string;
-    intermediateDir?: string;
-    publishDir?: string;
-    buildDir?: string;
-}
-
-interface IBuildTargetConfigCollection {
-    [platform: string]: IBuildTargetConfig;
-
-    aix?: IBuildTargetConfig;
-    android?: IBuildTargetConfig;
-    darwin?: IBuildTargetConfig;
-    freebsd?: IBuildTargetConfig;
-    linux?: IBuildTargetConfig;
-    openbsd?: IBuildTargetConfig;
-    sunos?: IBuildTargetConfig;
-    win32?: IBuildTargetConfig;
-    cygwin?: IBuildTargetConfig;
-}
-
-interface IBuildTargetConfig {
-    archs: Array<NodeJS.Architecture>;
-}
-
-type ExecutionModel = "parallel" | "series";
-
-interface IBuildTaskGroup {
-    executionModel: ExecutionModel;
-    tasks: Array<string | IBuildTaskGroup>;
-}
-
-interface IBuildTasksArray extends Array<string | IBuildTaskGroup | IBuildTasksArray> { }
-
-type BuildTaskTree = IBuildTasksArray | IBuildTaskGroup;
-
-interface IBuildTaskDictionary {
-    [taskName: string]: BuildTaskTree;
-
-    build?: BuildTaskTree;
-    publish?: BuildTaskTree;
-}
-
-interface ICopyTaskConfig {
-    includeDefaults?: boolean;
-    globs?: Array<string>;
-}
-
-interface IMsiTaskConfig {
-    autoGenerateComponentGuids?: boolean;
-    generateGuidsNow?: boolean;
-    keepEmptyFolders?: boolean;
-    rootDirectory?: string;
-    componentGroupName?: string;
-    xsltTemplatePath?: string;
-    wxsGlobs?: Array<string>;
-    variables?: IDictionary<string>;
-    spdb?: boolean;
-}
-
-interface IBuildTaskConfigDictionary extends IDictionary<any> {
-    "copy-files"?: ICopyTaskConfig;
-    "publish@msi"?: IMsiTaskConfig;
-}
-
-interface IBuildInfos {
-    productName?: string;
-    description?: string;
-    copyright?: string;
-
-    buildNumber?: string;
-
-    tasks?: IBuildTaskDictionary;
-    taskConfigs?: IBuildTaskConfigDictionary;
-
-    targets?: IBuildTargetConfigCollection;
-    paths?: IBuildPaths;
-}
-
 type DepType = "prod" | "dev" | "optional" | "bundle";
 
 interface IDynamicDependency {
@@ -117,3 +38,5 @@ interface IPackageConfig {
 
     dynamicDependencies?: IDictionary<IDynamicDependency>;
 }
+
+type ProcessorConstructor = (config: any, buildTarget: IBuildTaget, buildInfos: IBuildInfos) => NodeJS.WritableStream & NodeJS.ReadableStream;

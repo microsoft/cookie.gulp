@@ -7,12 +7,24 @@ import * as gulp from "gulp";
 import * as fs from "fs";
 import * as path from "path";
 
+import * as gulpUtils from "./glob-utils";
 import * as utils from "./utilities";
 import * as configs from "./configs";
 import * as undertaker from "undertaker";
 import { installDynamicDependencies } from "./dynamic-dependency";
 
-function generateTask(taskTree: BuildTaskTree): undertaker.TaskFunction {
+function isBuildTaskTree(value: any): value is BuildTaskTree {
+    return value
+        && (Array.isArray(value)
+            || (<IBuildTaskGroup>value).executionModel === "parallel"
+            || (<IBuildTaskGroup>value).executionModel === "series");
+}
+
+function isBuildTaskDef(value: any): value is IBuildTaskDefinition {
+    return value && Array.isArray((<IBuildTaskDefinition>value).processors);
+}
+
+function generateTaskByBuildTaskTree(taskTree: BuildTaskTree): undertaker.TaskFunction {
     if (utils.isNullOrUndefined(taskTree)) {
         return undefined;
     }
@@ -28,16 +40,121 @@ function generateTask(taskTree: BuildTaskTree): undertaker.TaskFunction {
     return createTaskFn(
         targetTasks
             .filter((task) => !utils.isNullOrUndefined(task))
-            .map((task) => utils.isString(task) ? task : generateTask(task)));
+            .map((task) => utils.isString(task) ? task : generateTaskByBuildTaskTree(task)));
 }
 
-function registerTask(taskName: string, tasks: BuildTaskTree): void {
-    const task = generateTask(tasks);
+function registerTaskByBuildTaskTree(taskName: string, tasks: BuildTaskTree): void {
+    const task = generateTaskByBuildTaskTree(tasks);
 
     if (!task) {
         gulp.registry().set(taskName, undefined);
+        return;
+    }
+
+    gulp.task(taskName, task);
+}
+
+function generateTaskByProcessors(
+    taskDef: IBuildTaskDefinition,
+    targetConfig: IBuildTaget): undertaker.TaskFunction {
+    if (!Array.isArray(taskDef.processors) || taskDef.processors.length <= 0) {
+        throw new Error("taskDef.processors (Array<string>) must be provided.");
+    }
+
+    let lastProcessor: NodeJS.ReadableStream & NodeJS.WritableStream;
+
+    lastProcessor =
+        gulp.src(
+            taskDef.sources ? gulpUtils.formGlobs(...gulpUtils.toGlobs(taskDef.sources)) : gulpUtils.formGlobs("**/*"),
+            { dot: true });
+
+    for (const processorRef of taskDef.processors) {
+        let processorName: string;
+
+        if (utils.isString(processorRef)) {
+            processorName = processorRef;
+        } else {
+            processorName = processorRef.name;
+        }
+
+        if (utils.string.isNullUndefinedOrWhitespaces(processorName)) {
+            throw new Error("processor name must be provided. (null/undefined/empty/whitespaces are not acceptable).");
+        }
+
+        const processorConfig =
+            Object.assign(
+                Object.create(null),
+                configs.buildInfos.configs.processors[processorName],
+                utils.isString(processorRef) ? null : processorRef);
+        const constructProcessor: ProcessorConstructor = require(`./processors/${processorName}`);
+
+        lastProcessor =
+            lastProcessor.pipe(
+                constructProcessor(
+                    processorConfig,
+                    targetConfig,
+                    configs.buildInfos));
+    }
+
+    lastProcessor = lastProcessor.pipe(gulp.dest(taskDef.dest || configs.buildInfos.paths.buildDir, { overwrite: true }));
+
+    return () => lastProcessor;
+}
+
+function registerTaskByProcessors(taskName: string, taskDef: IBuildTaskDefinition): void {
+    if (configs.buildInfos.targets.length <= 0) {
+        gulp.task(taskName, generateTaskByProcessors(taskDef, undefined));
+        return;
+    }
+
+    const subTasks: Array<string> = [];
+
+    for (const targetConfig of configs.buildInfos.targets) {
+        const subTaskName: string = `${taskName}:${targetConfig.platform}`;
+
+        subTasks.push(subTaskName);
+
+        if (!targetConfig.archs || targetConfig.archs.length <= 0) {
+            gulp.task(
+                subTaskName,
+                generateTaskByProcessors(taskDef, { platform: targetConfig.platform }));
+
+        } else {
+            const childTasks: Array<string> = [];
+
+            for (const arch of targetConfig.archs) {
+                const childTaskName: string = `${subTaskName}@${arch}`;
+
+                childTasks.push(childTaskName);
+
+                gulp.task(
+                    childTaskName,
+                    generateTaskByProcessors(taskDef, { platform: targetConfig.platform, arch: arch }));
+            }
+
+            gulp.task(subTaskName, gulp.series(childTasks));
+        }
+    }
+
+    gulp.task(taskName, gulp.series(subTasks));
+}
+
+
+function registerTask(taskName: string, tasks: BuildTaskTree | IBuildTaskDefinition): void {
+    if (isBuildTaskTree(tasks)) {
+        registerTaskByBuildTaskTree(taskName, tasks);
+
+    } else if (isBuildTaskDef(tasks)) {
+        registerTaskByProcessors(taskName, tasks);
+
     } else {
-        gulp.task(taskName, task);
+        throw new Error("Invalid buildInfos:tasks.");
+    }
+}
+
+function configureTasks(): void {
+    for (const taskName of Object.keys(configs.buildInfos.tasks)) {
+        registerTask(taskName, configs.buildInfos.tasks[taskName]);
     }
 }
 
@@ -75,8 +192,4 @@ importTasks();
 installDynamicDependencies();
 
 // Check if tasks are configured.
-if (configs.buildInfos.tasks) {
-    for (const taskName of Object.keys(configs.buildInfos.tasks)) {
-        registerTask(taskName, configs.buildInfos.tasks[taskName]);
-    }
-}
+configureTasks();

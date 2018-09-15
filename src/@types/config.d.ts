@@ -76,6 +76,12 @@ interface IMsiProcessorConfig {
     spdb?: boolean;
 }
 
+interface IElectronPackageProcessorConfig {
+    asar?: boolean;
+    icon?: string;
+    
+}
+
 interface IBuildTaskConfigDictionary extends IDictionary<any> {
 }
 

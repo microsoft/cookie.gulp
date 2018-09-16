@@ -7,7 +7,6 @@ import * as ts from "typescript";
 import * as fs from "fs";
 import * as tmp from "tmp";
 
-import * as configs from "../configs";
 import * as tsc from "../components/tsc/tsc";
 import * as utils from "../utilities";
 import * as log from "../log";
@@ -29,13 +28,13 @@ function loadTsConfigJson(): Readonly<ITsConfig> {
 }
 
 const typescript: ProcessorConstructor =
-    () => {
+    (config, buildTarget, buildInfos, packageJson): NodeJS.ReadableStream & NodeJS.WritableStream => {
         const tsconfig = loadTsConfigJson();
         let tempDir: tmp.ITempObject;
 
         if (utils.string.isNullUndefinedOrWhitespaces(tsconfig.compilerOptions.outDir)) {
             log.warning("TypeScript", "tsconfig.json", "tsconfig.json:outDir is not specified. A temp directory is created and assigned to it.");
-            tempDir = tmp.dirSync({ dir: configs.buildInfos.paths.intermediateDir, unsafeCleanup: true });
+            tempDir = tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true });
             tsconfig.compilerOptions.outDir = tempDir.name;
         }
 

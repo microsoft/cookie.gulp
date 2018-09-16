@@ -23,7 +23,7 @@ const DepTypeToNpmArg = {
 
 const LogCategory = "Dynamic Dependency";
 
-function isModuleInstalled(modulePath: string): boolean {
+export function isModuleInstalled(modulePath: string): boolean {
     try {
         require.resolve(modulePath);
         return true;
@@ -69,7 +69,7 @@ function areConditionsMatched(depName: string, dep: IDynamicDependency): boolean
     return true;
 }
 
-function installDynamicDependency(depName: string, dep: IDynamicDependency): void {
+export function installDynamicDependency(depName: string, dep: IDynamicDependency): void {
     const npmCmd = String.format("npm install {}{} {}",
         depName,
         dep.version ? "@" + dep.version : "",

@@ -65,7 +65,7 @@ function generateTaskByProcessors(
 
     lastProcessor =
         gulp.src(
-            taskDef.sources ? gulpUtils.formGlobs(...gulpUtils.toGlobs(taskDef.sources)) : gulpUtils.formGlobs("**/*"),
+            taskDef.sources ? gulpUtils.toGlobs(taskDef.sources) : gulpUtils.normalizeGlobs("**/*"),
             { dot: true });
 
     for (const processorRef of taskDef.processors) {
@@ -93,7 +93,8 @@ function generateTaskByProcessors(
                 constructProcessor(
                     processorConfig,
                     targetConfig,
-                    configs.buildInfos));
+                    configs.buildInfos,
+                    configs.packageJson));
     }
 
     lastProcessor = lastProcessor.pipe(gulp.dest(taskDef.dest || configs.buildInfos.paths.buildDir, { overwrite: true }));

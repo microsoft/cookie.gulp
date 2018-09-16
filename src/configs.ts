@@ -32,6 +32,11 @@ function generateBuildInfos(): IBuildInfos {
 
     log.info("Config", "BuildInfos", "Generating runtime buildinfos ...");
 
+    buildInfos.productName = buildInfos.productName || packageJson.name;
+    buildInfos.executableName = buildInfos.executableName || packageJson.name;
+    buildInfos.description = buildInfos.description || packageJson.description;
+    buildInfos.copyright = buildInfos.copyright || `Copyright (c) ${packageJson.author}.`;
+
     /**
      * buildNumber
      */

@@ -26,10 +26,11 @@ function generateMsiVersion(buildInfos: IBuildInfos): string {
     return `${semver.major(version)}.${semver.minor(version)}.${semver.patch(version)}`;
 }
 
+export = msi;
 const msi: ProcessorConstructor =
-    (config: IMsiProcessorConfig, buildTarget, buildInfos) => {
+    (config: IMsiProcessorConfig, buildTarget, buildInfos, packageJson) => {
         if (process.platform !== "win32") {
-            log.warning("MSI", "Target", "Skipping: Publishing MSI must be win32.");
+            log.warning("MSI", "Target", "Skipping: Publishing MSI must be on win32.");
             return new PassThrough();
         }
 
@@ -72,5 +73,3 @@ const msi: ProcessorConstructor =
                 outFileName: `setup-${config.variables[VarName_MsiVersion]}.${buildTarget.arch}.msi`
             }));
     };
-
-export = msi;

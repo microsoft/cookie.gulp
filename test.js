@@ -1,4 +1,5 @@
 const gulp = require("gulp");
+const vinyl = require("vinyl");
 const { Transform, PassThrough } = require("stream");
 
 const subStream = new Transform({
@@ -49,8 +50,13 @@ function chain(stream1, stream2) {
     return proxy;
 }
 
-const source = gulp.src("src/@types/*.d.ts", { dot: true }).pipe(new PassThrough({ objectMode: true }));
-
-source.pipe(gulp.dest("tmp1"));
-source.pipe(gulp.dest("tmp2"));
-source.pipe(gulp.dest("tmp3"));
+// gulp.src("src/**/*.json", { dot: true }).pipe().pipe(new Transform({
+//     objectMode: true,
+//     transform(chunk, encoding, callback) {
+//         console.log(chunk.inspect());
+//         this.push(chunk);
+//         callback();
+//     }
+// }))
+const file = new vinyl({ path: "D:/Sources/cookie.gulp/test.js" });
+console.log(file.isNull());

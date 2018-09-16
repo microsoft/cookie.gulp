@@ -78,8 +78,18 @@ interface IMsiProcessorConfig {
 
 interface IElectronPackageProcessorConfig {
     asar?: boolean;
-    icon?: string;
-    
+    icons?: IPath;
+    macOS?: {
+        appBundleId: string;
+        appCategoryType: string;
+        helperBundleId?: string;
+    }
+}
+
+interface IElectronLinuxInstallerProcessorConfig {
+    section?: string;
+    icons?: IPath;
+    categories?: Array<string>;
 }
 
 interface IBuildTaskConfigDictionary extends IDictionary<any> {
@@ -87,13 +97,18 @@ interface IBuildTaskConfigDictionary extends IDictionary<any> {
 
 interface IBuildProcessorConfigDictionary extends IDictionary<any> {
     "msi"?: IMsiProcessorConfig;
+    "electron-package"?: IElectronPackageProcessorConfig;
+    "deb"? : IElectronLinuxInstallerProcessorConfig;
+    "rpm"? : IElectronLinuxInstallerProcessorConfig;
 }
 
 interface IBuildInfos {
     productName?: string;
+    executableName?: string;
+
     description?: string;
     copyright?: string;
-
+    
     buildNumber?: string;
 
     tasks?: IBuildTaskDictionary;

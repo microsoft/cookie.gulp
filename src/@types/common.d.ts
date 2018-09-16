@@ -14,10 +14,10 @@ interface IDictionary<TValue> {
 type DepType = "prod" | "dev" | "optional" | "bundle";
 
 interface IDynamicDependency {
-    version: string;
-    depTypes: Array<DepType>;
-    archs: Array<NodeJS.Architecture>;
-    platforms: Array<NodeJS.Platform>;
+    version?: string;
+    depTypes?: Array<DepType>;
+    archs?: Array<NodeJS.Architecture>;
+    platforms?: Array<NodeJS.Platform>;
 }
 
 interface IPackageConfig {
@@ -39,4 +39,4 @@ interface IPackageConfig {
     dynamicDependencies?: IDictionary<IDynamicDependency>;
 }
 
-type ProcessorConstructor = (config: any, buildTarget: IBuildTaget, buildInfos: IBuildInfos) => NodeJS.WritableStream & NodeJS.ReadableStream;
+type ProcessorConstructor = (config: any, buildTarget: IBuildTaget, buildInfos: IBuildInfos, packageJson: IPackageConfig) => NodeJS.WritableStream & NodeJS.ReadableStream;

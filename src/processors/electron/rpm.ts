@@ -9,12 +9,12 @@ import * as tmp from "tmp";
 import * as glob from "fast-glob";
 import * as path from "path";
 
-import * as log from "../log";
-import * as globUtils from "../glob-utils";
-import * as dd from "../dynamic-dependency";
+import * as log from "../../log";
+import * as globUtils from "../../glob-utils";
+import * as dd from "../../dynamic-dependency";
 
-const InstallerDepName = "electron-installer-debian";
-const ModuleName = "DEB";
+const InstallerDepName = "electron-installer-redhat";
+const ModuleName = "RPM";
 
 function toInstallerArch(arch: NodeJS.Architecture): string {
     if (!arch) {
@@ -57,8 +57,8 @@ function generateIconOptions(iconPath: IPath): any {
     return iconObj;
 }
 
-export = deb;
-const deb: ProcessorConstructor =
+export = constructProcessor;
+const constructProcessor: ProcessorConstructor =
     (config: IElectronLinuxInstallerProcessorConfig, buildTarget, buildInfos, packageJson): NodeJS.ReadableStream & NodeJS.WritableStream => {
         if (process.platform !== "linux") {
             log.warning(ModuleName, "Target", "Skipping: Publishing RPM must be on linux.");

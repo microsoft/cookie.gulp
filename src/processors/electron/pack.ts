@@ -11,7 +11,7 @@ import * as VinylFile from "vinyl";
 import * as packager from "electron-packager";
 import * as glob from "fast-glob";
 
-import * as globUtils from "../glob-utils";
+import * as globUtils from "../../glob-utils";
 
 function toPackagerArch(arch: NodeJS.Architecture): packager.arch {
     switch (arch) {
@@ -45,8 +45,8 @@ function toPackagerPlatform(platform: NodeJS.Platform): packager.platform {
     }
 }
 
-export = electronPackage;
-const electronPackage: ProcessorConstructor =
+export = constructProcessor;
+const constructProcessor: ProcessorConstructor =
     (config: IElectronPackageProcessorConfig, buildTarget, buildInfos, packageJson): NodeJS.ReadableStream & NodeJS.WritableStream => {
         const tempDir = tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name;
 

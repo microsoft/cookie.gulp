@@ -61,7 +61,7 @@ const msi: ProcessorConstructor =
                 componentGroupName: config.componentGroupName,
                 xsltTemplatePath: config.xsltTemplatePath
             }),
-            gulp.src(globUtils.formGlobs(...(config.wxsGlobs || ["**/*.wxs"])), { dot: true }),
+            gulp.src(config.wxsPath ? globUtils.toGlobs(config.wxsPath, "wxs") : "**/*.wxs", { dot: true }),
             wix.candle({
                 intermediateDir: buildInfos.paths.intermediateDir,
                 arch: <MsiArch>buildTarget.arch,

@@ -71,7 +71,7 @@ interface IMsiProcessorConfig {
     rootDirectory?: string;
     componentGroupName?: string;
     xsltTemplatePath?: string;
-    wxsGlobs?: Array<string>;
+    wxsPath: IPath;
     variables?: IDictionary<string>;
     spdb?: boolean;
 }
@@ -97,9 +97,9 @@ interface IBuildTaskConfigDictionary extends IDictionary<any> {
 
 interface IBuildProcessorConfigDictionary extends IDictionary<any> {
     "msi"?: IMsiProcessorConfig;
-    "electron-package"?: IElectronPackageProcessorConfig;
-    "deb"? : IElectronLinuxInstallerProcessorConfig;
-    "rpm"? : IElectronLinuxInstallerProcessorConfig;
+    "electron/pack"?: IElectronPackageProcessorConfig;
+    "electron/deb"? : IElectronLinuxInstallerProcessorConfig;
+    "electron/rpm"? : IElectronLinuxInstallerProcessorConfig;
 }
 
 interface IBuildInfos {

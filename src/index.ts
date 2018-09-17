@@ -6,12 +6,28 @@
 import * as gulp from "gulp";
 import * as fs from "fs";
 import * as path from "path";
+import * as cp from "child_process";
+import * as glob from "fast-glob";
 
 import * as gulpUtils from "./glob-utils";
 import * as utils from "./utilities";
 import * as configs from "./configs";
 import * as undertaker from "undertaker";
 import { installDynamicDependencies } from "./dynamic-dependency";
+
+function executeGulp(taskName: string, cwd: string): cp.ChildProcess {
+    return cp.exec(`gulp ${taskName}`, { cwd: cwd });
+}
+
+function executeSubTasks(taskName: string): undertaker.TaskFunction {
+    const taskFuncs: Array<undertaker.TaskFunction> = [];
+
+    for (const gulpfile of glob.sync<string>("**/gulpfile.js", { dot: true })) {
+        taskFuncs.push(executeGulp.bind(null, taskName, path.dirname(gulpfile)));
+    }
+
+    return gulp.series(taskFuncs);
+}
 
 function isBuildTaskTree(value: any): value is BuildTaskTree {
     return value
@@ -51,7 +67,10 @@ function registerTaskByBuildTaskTree(taskName: string, tasks: BuildTaskTree): vo
         return;
     }
 
-    gulp.task(taskName, task);
+    gulp.task(taskName,
+        gulp.series(
+            task,
+            executeSubTasks(taskName)));
 }
 
 function generateTaskByProcessors(
@@ -192,5 +211,5 @@ importTasks();
 // Install dynamic dependencies.
 installDynamicDependencies();
 
-// Check if tasks are configured.
+// Configure tasks.
 configureTasks();

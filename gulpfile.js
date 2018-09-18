@@ -7,6 +7,7 @@
 
 const gulp = require("gulp");
 const del = require("del");
+const { Transform } = require("stream");
 
 /**
  * @typedef ITsConfig 
@@ -57,7 +58,7 @@ function toGlobs(tsconfig) {
 }
 
 gulp.task("compile:typescripts", () => {
-    const tsc = require("./src/components/tsc");
+    const tsc = require("./components/tsc");
     const ts = require("typescript");
     const tsconfig = loadTsConfigJson();
     const compilerOptionsParseResult = ts.convertCompilerOptionsFromJson(tsconfig.compilerOptions, undefined);
@@ -75,12 +76,33 @@ gulp.task("compile:typescripts", () => {
 
 gulp.task("copy-files",
     () => gulp
-        .src(["src/**/*", "!src/**/*.ts", "src/**/*.d.ts"], { dot: true })
+        .src([
+            "**/*",
+            "!**/*.ts",
+            "**/*.d.ts",
+
+            "!publish/**/*",
+            "!node_modules/**/*",
+            "!build/**/*",
+
+            "!build",
+            "!publish",
+            "!node_modules"])
+        .pipe(new Transform({
+            objectMode: true,
+            transform(chunk, encoding, callback) {
+                console.log(chunk.isDirectory() ? "dir" : "file", chunk.path);
+                this.push(chunk);
+                callback();
+            }
+        }))
         .pipe(gulp.dest("build", { overwrite: true })));
 
 gulp.task("build", gulp.series("compile:typescripts", "copy-files"));
 
-gulp.task("clean", () => del("build/"));
+
+
+gulp.task("clean", () => del(["build/", "publish/"]));
 
 gulp.task("clean-build", gulp.series("clean", "build"));
 

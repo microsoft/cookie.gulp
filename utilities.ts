@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
@@ -144,6 +144,38 @@ export namespace array {
 }
 
 export namespace object {
+    /**
+     * Check if the target object is empty.
+     * @param target The object to be checked.
+     * @returns {boolean} True if the object is empty. Otherwise, false.
+     */
+    export function isEmpty(target: any): boolean {
+        // @ts-ignore: This is intended to improve the performance.
+        for (const prop in target) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if the target object is null/undefined/empty.
+     * @param target The object to be checked.
+     * @returns {boolean} True if the object is null/undefined/empty. Otherwise, false.
+     */
+    export function isNullUndefinedOrEmpty(target: any): boolean {
+        if (!target) {
+            return true;
+        }
+
+        // @ts-ignore: This is intended to improve the performance.
+        for (const prop in target) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Travel the object against the property path and return the value.
      * @param {any} target Target the object to travel.

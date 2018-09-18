@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
@@ -90,6 +90,10 @@ interface IElectronLinuxInstallerProcessorConfig {
     section?: string;
     icons?: IPath;
     categories?: Array<string>;
+}
+
+interface ILicensingProcessorConfig {
+    "licenses-overrides": IDictionary<string>
 }
 
 interface IBuildTaskConfigDictionary extends IDictionary<any> {

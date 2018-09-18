@@ -7,7 +7,9 @@
 
 const gulp = require("gulp");
 const del = require("del");
-const { Transform } = require("stream");
+const cp = require("child_process");
+const path = require("path");
+const fs = require("fs");
 
 /**
  * @typedef ITsConfig 
@@ -81,6 +83,8 @@ gulp.task("copy-files",
             "!**/*.ts",
             "**/*.d.ts",
 
+            "!**/gulpfile.js",
+            "!**/package-lock.json",
             "!publish/**/*",
             "!node_modules/**/*",
             "!build/**/*",
@@ -88,22 +92,40 @@ gulp.task("copy-files",
             "!build",
             "!publish",
             "!node_modules"])
-        .pipe(new Transform({
-            objectMode: true,
-            transform(chunk, encoding, callback) {
-                console.log(chunk.isDirectory() ? "dir" : "file", chunk.path);
-                this.push(chunk);
-                callback();
-            }
-        }))
         .pipe(gulp.dest("build", { overwrite: true })));
 
 gulp.task("build", gulp.series("compile:typescripts", "copy-files"));
 
+gulp.task("pack:npm", () => {
+    try {
+        const publishStats = fs.statSync("./publish");
 
+        if (!publishStats.isDirectory()) {
+            fs.mkdirSync("./publish");
+        }
+    } catch (err) {
+        if (err && err.code === "ENOENT") {
+            fs.mkdirSync("./publish");
+        } else {
+            throw err;
+        }
+    }
+
+    try {
+        const npmPackCmd = `npm pack "${path.resolve("./build")}"`;
+
+        console.log("Executing:", npmPackCmd);
+        const output = cp.execSync(npmPackCmd, { cwd: path.resolve("./publish"), encoding: "utf8" });
+
+        console.log("Info", output);
+        return Promise.resolve();
+    } catch (err) {
+        return Promise.reject(err);
+    }
+});
 
 gulp.task("clean", () => del(["build/", "publish/"]));
 
 gulp.task("clean-build", gulp.series("clean", "build"));
 
-
+gulp.task("publish", gulp.series("clean-build", "pack:npm"));

@@ -3,11 +3,8 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-declare namespace NodeJS {
-    /** The operating system CPU architecture. */
-    type Architecture = "arm" | "arm64" | "ia32" | "mips" | "mipsel" | "ppc" | "ppc64" | "s390" | "s390x" | "x32" | "x64";
+import { GlobLike } from "./configs";
 
-    interface WritableStream {
-        write(chunk: any, cb?: (error: Error | null | undefined) => void): boolean;
-    }
-}
+export declare function normalizeGlobs(...globs: Array<string>): Array<string>;
+
+export declare function toGlobs(globlike: GlobLike, exts?: string | Array<string>): Array<string>;

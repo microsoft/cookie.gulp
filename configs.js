@@ -2,40 +2,58 @@
 // Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 
-import * as fs from "fs";
+const fs = require("fs");
 
-import * as log from "./log";
-import * as utils from "./utilities";
+const log = require("./log");
+const utils = require("./utilities");
 
+/** @type {string} */
 const buildInfosJsonPath = "./buildinfos.json";
+
+/** @type {string} */
 const packageJsonPath = "./package.json";
 
-function loadBuildInfosJson(): Readonly<IBuildInfos> {
+/**
+ * Load buildinfos.json.
+ * @returns {IBuildInfos}
+ */
+function loadBuildInfosJson() {
     if (!fs.existsSync(buildInfosJsonPath)) {
-        return {};
+        return Object.create(null);
     }
 
     return JSON.parse(fs.readFileSync(buildInfosJsonPath, "utf8"));
 }
 
-function loadPackageJson(): Readonly<IPackageConfig> {
+/**
+ * Load package.json.
+ * @returns {IPackageConfig}
+ */
+function loadPackageJson() {
     if (!fs.existsSync(packageJsonPath)) {
-        return {};
+        return Object.create(null);
     }
 
     return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 }
 
-function generateBuildInfos(): IBuildInfos {
-    const buildInfos: IBuildInfos = JSON.parse(JSON.stringify(buildInfosJson));
+/**
+ * Generate runtime buildinfos.
+ * @returns {IBuildInfos}
+ */
+function generateBuildInfos() {
+    /** @type {IBuildInfos} */
+    const buildInfos = JSON.parse(JSON.stringify(exports.buildInfosJson));
 
     log.info("Config", "BuildInfos", "Generating runtime buildinfos ...");
 
-    buildInfos.productName = buildInfos.productName || packageJson.name;
-    buildInfos.executableName = buildInfos.executableName || packageJson.name;
-    buildInfos.description = buildInfos.description || packageJson.description;
-    buildInfos.copyright = buildInfos.copyright || `Copyright (c) ${packageJson.author}.`;
+    buildInfos.productName = buildInfos.productName || exports.packageJson.name;
+    buildInfos.executableName = buildInfos.executableName || exports.packageJson.name;
+    buildInfos.description = buildInfos.description || exports.packageJson.description;
+    buildInfos.copyright = buildInfos.copyright || `Copyright (c) ${exports.packageJson.author}.`;
     buildInfos.ignores = buildInfos.ignores || [];
 
     /**
@@ -43,11 +61,12 @@ function generateBuildInfos(): IBuildInfos {
      */
     if (buildInfos.buildNumber === "*") {
         log.info("Config", "BuildInfos", "evn:BUILD_BUILDNUMBER", "=", process.env["BUILD_BUILDNUMBER"]);
-        log.info("Config", "BuildInfos", "package.json:version", "=", packageJson.version);
-        buildInfos.buildNumber = process.env["BUILD_BUILDNUMBER"] || packageJson.version;
+        log.info("Config", "BuildInfos", "package.json:version", "=", exports.packageJson.version);
+
+        buildInfos.buildNumber = process.env["BUILD_BUILDNUMBER"] || exports.packageJson.version;
+
         log.info("Config", "BuildInfos", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
     }
-
     /**
      * paths
      */
@@ -99,7 +118,6 @@ function generateBuildInfos(): IBuildInfos {
     if (!buildInfos.targets) {
         buildInfos.targets = [];
     }
-
     /**
      * tasks
      */
@@ -112,7 +130,11 @@ function generateBuildInfos(): IBuildInfos {
     return buildInfos;
 }
 
-export const packageJson = loadPackageJson();
-export const buildInfosJson = loadBuildInfosJson();
+/** @type {IPackageConfig} */
+exports.packageJson = loadPackageJson();
 
-export const buildInfos = generateBuildInfos();
+/** @type {IBuildInfos} */
+exports.buildInfosJson = loadBuildInfosJson();
+
+/** @type {IBuildInfos} */
+exports.buildInfos = generateBuildInfos();

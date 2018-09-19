@@ -2,25 +2,38 @@
 // Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 
-import * as glob from "fast-glob";
-import * as path from "path";
+const glob = require("fast-glob");
+const path = require("path");
+const configs = require("./configs");
 
-import * as configs from "./configs";
+const Regex = {
+    /** @type {RegExp} */
+    PathRef = /^\<([^\<\>]+)\>$/ig,
 
-namespace Regex {
-    export const PathRef = /^\<([^\<\>]+)\>$/ig;
-    export const GlobLike = /[\^\*\!\+\?\@\|]+/ig;
-}
+    /** @type {RegExp} */
+    GlobLike = /[\^\*\!\+\?\@\|]+/ig
+};
 
-export function normalizeGlobs(...globs: Array<string>): Array<string> {
-    const gulpfiles: Array<string> = glob.sync("**/gulpfile.js");
-    const outputGlobs: Array<string> = [];
+/**
+ * 
+ * @param  {Array.<string>} globs 
+ * @returns {Array.<string>}
+ */
+function normalizeGlobs(...globs) {
+    /** @type {Array.<string>} */
+    const gulpfiles = glob.sync("**/gulpfile.js");
+
+    /** @type {Array.<string>} */
+    const outputGlobs = [];
 
     outputGlobs.push(...globs);
     outputGlobs.push(...gulpfiles.map(((fileName) => "!" + path.join(path.dirname(fileName), "**", "*"))));
 
     for (const ignoredPath of configs.buildInfos.ignores) {
+        /** @type {Array.<string>} */
         const ignoredGlobs = toGlob(ignoredPath);
 
         for (const ignoredGlob of ignoredGlobs) {
@@ -30,12 +43,23 @@ export function normalizeGlobs(...globs: Array<string>): Array<string> {
 
     return outputGlobs;
 }
+exports.normalizeGlobs = normalizeGlobs;
 
-function toGlob(globlike: string, exts?: Array<string>): Array<string> {
-    const finalizedGlobs: Array<string> = [];
+/**
+ * 
+ * @param {string} globlike 
+ * @param {Array.<string>} exts 
+ * @returns {Array.<string>} 
+ */
+function toGlob(globlike, exts) {
+    /** @type {Array.<string>} */
+    const finalizedGlobs = [];
 
-    let regexResult: RegExpExecArray;
-    let glob: string;
+    /** @type {RegExpExecArray} */
+    let regexResult;
+
+    /** @type {string} */
+    let glob;
 
     if (regexResult = Regex.PathRef.exec(globlike)) {
         glob = configs.buildInfos.paths[regexResult[1]];
@@ -66,7 +90,13 @@ function toGlob(globlike: string, exts?: Array<string>): Array<string> {
     return finalizedGlobs;
 }
 
-export function toGlobs(globlike: GlobLike, exts?: string | Array<string>): Array<string> {
+/**
+ * 
+ * @param {import("./configs").GlobLike} globlike 
+ * @param {string | Array.<string>} exts 
+ * @returns {Array.<string>}
+ */
+function toGlobs(globlike, exts) {
     if (!globlike) {
         throw new Error("path must be provided");
     }
@@ -85,13 +115,14 @@ export function toGlobs(globlike: GlobLike, exts?: string | Array<string>): Arra
         throw new Error("Invalid value of param globlike. Only string | Array<string> is accepted.");
     }
 
-    const results: Array<string> = [];
+    /** @type {Array.<string>} */
+    const results = [];
 
     for (const globlikeItem of globlike) {
-        const globs = toGlob(globlikeItem, <Array<string>>exts);
-
+        const globs = toGlob(globlikeItem, exts);
         results.push(...globs);
     }
 
     return normalizeGlobs(...results);
 }
+exports.toGlobs = toGlobs;

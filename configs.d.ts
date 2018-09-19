@@ -3,54 +3,56 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-interface IBuildPaths {
+/// <reference path="common.d.ts" />
+
+declare interface IBuildPaths {
     [pathName: string]: string;
     intermediateDir?: string;
     publishDir?: string;
     buildDir?: string;
 }
 
-interface IBuildTargetConfig {
+declare interface IBuildTargetConfig {
     platform: NodeJS.Platform;
     archs: Array<NodeJS.Architecture>;
 }
 
-interface IBuildTaget {
+declare interface IBuildTaget {
     platform: NodeJS.Platform;
     arch?: NodeJS.Architecture;
 }
 
-type ExecutionModel = "parallel" | "series";
+declare type ExecutionModel = "parallel" | "series";
 
-type GlobLike = string | Array<string>;
+declare type GlobLike = string | Array<string>;
 
-interface IProcessorConfig extends IDictionary<any> {
+declare interface IProcessorConfig extends IDictionary<any> {
     name: string;
 }
 
-interface IBuildTaskDefinition {
+declare interface IBuildTaskDefinition {
     sources?: GlobLike;
     dest?: string;
     processors: Array<string | IProcessorConfig>;
 }
 
-interface IBuildTaskGroup {
+declare interface IBuildTaskGroup {
     executionModel: ExecutionModel;
     tasks: Array<string | IBuildTaskGroup>;
 }
 
-interface IBuildTasksArray extends Array<string | IBuildTaskGroup | IBuildTasksArray> { }
+declare interface IBuildTasksArray extends Array<string | IBuildTaskGroup | IBuildTasksArray> { }
 
-type BuildTaskTree = IBuildTasksArray | IBuildTaskGroup;
+declare type BuildTaskTree = IBuildTasksArray | IBuildTaskGroup;
 
-interface IBuildTaskDictionary {
+declare interface IBuildTaskDictionary {
     [taskName: string]: BuildTaskTree | IBuildTaskDefinition;
 
     build?: BuildTaskTree | IBuildTaskDefinition;
     publish?: BuildTaskTree | IBuildTaskDefinition;
 }
 
-interface IMsiProcessorConfig {
+declare interface IMsiProcessorConfig {
     autoGenerateComponentGuids?: boolean;
     generateGuidsNow?: boolean;
     keepEmptyFolders?: boolean;
@@ -62,7 +64,7 @@ interface IMsiProcessorConfig {
     spdb?: boolean;
 }
 
-interface IElectronPackageProcessorConfig {
+declare interface IElectronPackageProcessorConfig {
     asar?: boolean;
     icons?: GlobLike;
     macOS?: {
@@ -72,27 +74,27 @@ interface IElectronPackageProcessorConfig {
     }
 }
 
-interface IElectronLinuxInstallerProcessorConfig {
+declare interface IElectronLinuxInstallerProcessorConfig {
     section?: string;
     icons?: GlobLike;
     categories?: Array<string>;
 }
 
-interface ILicensingProcessorConfig {
+declare interface ILicensingProcessorConfig {
     "licenses-overrides": IDictionary<string>
 }
 
-interface IBuildTaskConfigDictionary extends IDictionary<any> {
+declare interface IBuildTaskConfigDictionary extends IDictionary<any> {
 }
 
-interface IBuildProcessorConfigDictionary extends IDictionary<any> {
+declare interface IBuildProcessorConfigDictionary extends IDictionary<any> {
     "msi"?: IMsiProcessorConfig;
     "electron/pack"?: IElectronPackageProcessorConfig;
     "electron/deb"? : IElectronLinuxInstallerProcessorConfig;
     "electron/rpm"? : IElectronLinuxInstallerProcessorConfig;
 }
 
-interface IBuildInfos {
+declare interface IBuildInfos {
     productName?: string;
     executableName?: string;
 
@@ -112,3 +114,7 @@ interface IBuildInfos {
     paths?: IBuildPaths;
     ignores?: Array<string>;
 }
+
+declare export const packageJson: Readonly<IPackageConfig>;
+declare export const buildInfosJson: Readonly<IBuildInfos>;
+declare export const buildInfos: IBuildInfos;

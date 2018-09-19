@@ -8,6 +8,11 @@ import * as path from "path";
 
 import * as configs from "./configs";
 
+namespace Regex {
+    export const PathRef = /^\<([^\<\>]+)\>$/ig;
+    export const GlobLike = /[\^\*\!\+\?\@\|]+/ig;
+}
+
 export function normalizeGlobs(...globs: Array<string>): Array<string> {
     const gulpfiles: Array<string> = glob.sync("**/gulpfile.js");
     const outputGlobs: Array<string> = [];
@@ -15,60 +20,78 @@ export function normalizeGlobs(...globs: Array<string>): Array<string> {
     outputGlobs.push(...globs);
     outputGlobs.push(...gulpfiles.map(((fileName) => "!" + path.join(path.dirname(fileName), "**", "*"))));
 
+    for (const ignoredPath of configs.buildInfos.ignores) {
+        const ignoredGlobs = toGlob(ignoredPath);
+
+        for (const ignoredGlob of ignoredGlobs) {
+            outputGlobs.push("!" + ignoredGlob);
+        }
+    }
+
     return outputGlobs;
 }
 
-export function toGlobs(pathObj: IPath, exts?: string | Array<string>): Array<string> {
-    if (!pathObj) {
-        throw new Error("pathObj must be provided");
+function toGlob(globlike: string, exts?: Array<string>): Array<string> {
+    const finalizedGlobs: Array<string> = [];
+
+    let regexResult: RegExpExecArray;
+    let glob: string;
+
+    if (regexResult = Regex.PathRef.exec(globlike)) {
+        glob = configs.buildInfos.paths[regexResult[1]];
+
+    } else if (regexResult = Regex.GlobLike.exec(globlike)) {
+        finalizedGlobs.push(glob);
+        return finalizedGlobs;
+
+    } else {
+        glob = globlike;
     }
 
-    const extensions: Array<string> = [];
+    if (!exts || exts.length <= 0) {
+        if (glob.endsWith("/") || glob.endsWith("\\")) {
+            finalizedGlobs.push(glob.substr(0, glob.length - 1));
+        } else {
+            finalizedGlobs.push(glob);
+        }
+
+        finalizedGlobs.push(path.join(glob, "**", "*"));
+
+    } else {
+        for (const ext of exts) {
+            finalizedGlobs.push(path.join(glob, "**", `*.${ext}`));
+        }
+    }
+
+    return finalizedGlobs;
+}
+
+export function toGlobs(globlike: GlobLike, exts?: string | Array<string>): Array<string> {
+    if (!globlike) {
+        throw new Error("path must be provided");
+    }
 
     if (exts) {
         if (typeof exts === "string") {
-            extensions.push(exts);
-        } else if (Array.isArray(exts)) {
-            extensions.push(...exts);
-        } else {
+            exts = [exts];
+        } else if (!Array.isArray(exts)) {
             throw new Error("Unsupport value of param, exts");
         }
     }
 
-    switch (pathObj.type) {
-        case "globs":
-            const configuredGlobs = (<IGlobsPath>pathObj).globs;
-
-            return normalizeGlobs(...(Array.isArray(configuredGlobs) ? configuredGlobs : [configuredGlobs]));
-
-        case "path-ref":
-            let pathNames = (<IPathRef>pathObj).names;
-
-            if (!Array.isArray(pathNames)) {
-                pathNames = [pathNames];
-            }
-
-            const globs: Array<string> = [];
-
-            for (const pathName of pathNames) {
-                const pathValue = configs.buildInfos.paths[pathName];
-
-                if (!pathValue) {
-                    throw new Error(`Unknown path: ${pathName}. A path must be registered under buildInfos:paths`);
-                }
-
-                if (extensions.length > 0) {
-                    for (const ext of extensions) {
-                        globs.push(path.join(pathValue, "**", `*.${ext}`));
-                    }
-                } else {
-                    globs.push(path.join(pathValue, "**", "*"));
-                }
-            }
-
-            return normalizeGlobs(...globs);
-
-        default:
-            throw new Error(`Unsupported path type: ${pathObj.type}`);
+    if (typeof globlike === "string") {
+        globlike = [globlike];
+    } else if (!Array.isArray(globlike)) {
+        throw new Error("Invalid value of param globlike. Only string | Array<string> is accepted.");
     }
+
+    const results: Array<string> = [];
+
+    for (const globlikeItem of globlike) {
+        const globs = toGlob(globlikeItem, <Array<string>>exts);
+
+        results.push(...globs);
+    }
+
+    return normalizeGlobs(...results);
 }

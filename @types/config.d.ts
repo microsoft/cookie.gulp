@@ -22,28 +22,14 @@ interface IBuildTaget {
 
 type ExecutionModel = "parallel" | "series";
 
-type PathType = "globs" | "path-ref";
-
-interface IPath {
-    type: PathType;
-}
-
-interface IPathRef {
-    type: "path-ref";
-    names: string | Array<string>;
-}
-
-interface IGlobsPath extends IPath {
-    type: "globs";
-    globs: string | Array<string>;
-}
+type GlobLike = string | Array<string>;
 
 interface IProcessorConfig extends IDictionary<any> {
     name: string;
 }
 
 interface IBuildTaskDefinition {
-    sources?: IPath;
+    sources?: GlobLike;
     dest?: string;
     processors: Array<string | IProcessorConfig>;
 }
@@ -71,14 +57,14 @@ interface IMsiProcessorConfig {
     rootDirectory?: string;
     componentGroupName?: string;
     xsltTemplatePath?: string;
-    wxsPath: IPath;
+    wxs: GlobLike;
     variables?: IDictionary<string>;
     spdb?: boolean;
 }
 
 interface IElectronPackageProcessorConfig {
     asar?: boolean;
-    icons?: IPath;
+    icons?: GlobLike;
     macOS?: {
         appBundleId: string;
         appCategoryType: string;
@@ -88,7 +74,7 @@ interface IElectronPackageProcessorConfig {
 
 interface IElectronLinuxInstallerProcessorConfig {
     section?: string;
-    icons?: IPath;
+    icons?: GlobLike;
     categories?: Array<string>;
 }
 
@@ -124,4 +110,5 @@ interface IBuildInfos {
 
     targets?: Array<IBuildTargetConfig>;
     paths?: IBuildPaths;
+    ignores?: Array<string>;
 }

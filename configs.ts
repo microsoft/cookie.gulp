@@ -36,6 +36,7 @@ function generateBuildInfos(): IBuildInfos {
     buildInfos.executableName = buildInfos.executableName || packageJson.name;
     buildInfos.description = buildInfos.description || packageJson.description;
     buildInfos.copyright = buildInfos.copyright || `Copyright (c) ${packageJson.author}.`;
+    buildInfos.ignores = buildInfos.ignores || [];
 
     /**
      * buildNumber

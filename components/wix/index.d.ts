@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-export declare function normalizeGlobs(...globs: Array<string>): Array<string>;
+export declare function heat(options?: IHeatOptions): NodeJS.ReadWriteStream;
 
-export declare function toGlobs(globlike: import("./configs").GlobLike, exts?: string | Array<string>): Array<string>;
+export declare function candle(options?: ICandleOptions): NodeJS.ReadWriteStream;
+
+export declare function light(options?: ILightOptions): NodeJS.ReadWriteStream;

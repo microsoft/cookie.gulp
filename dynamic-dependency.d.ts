@@ -3,8 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-/// <reference path="common.d.ts" />
-
 declare export function isModuleInstalled(modulePath: string): boolean;
 
 declare export function installDynamicDependency(depName: string, dep: IDynamicDependency): void;

@@ -3,10 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-/// <reference types="node" />
-
-declare const moduleName = "cookie.gulp";
-
 declare namespace NodeJS {
     /** The operating system CPU architecture. */
     type Architecture = "arm" | "arm64" | "ia32" | "mips" | "mipsel" | "ppc" | "ppc64" | "s390" | "s390x" | "x32" | "x64";
@@ -52,4 +48,4 @@ interface IPackageConfig {
     dynamicDependencies?: IDictionary<IDynamicDependency>;
 }
 
-type ProcessorConstructor = (config: any, buildTarget: IBuildTaget, buildInfos: IBuildInfos, packageJson: IPackageConfig) => NodeJS.WritableStream & NodeJS.ReadableStream;
+type ProcessorConstructor = (config: any, buildTarget: IBuildTaget, buildInfos: IBuildInfos, packageJson: IPackageConfig) => NodeJS.ReadWriteStream;

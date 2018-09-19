@@ -2,44 +2,25 @@
 // Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 
-import * as VinylFile from "vinyl";
-import { Transform, Readable, Writable } from "stream";
-import * as fs from "fs";
-import * as path from "path";
-import * as tmp from "tmp";
-import * as cp from "child_process";
+const VinylFile = require("vinyl");
+const { Transform } = require("stream");
+const fs = require("fs");
+const path = require("path");
+const tmp = require("tmp");
+const cp = require("child_process");
 
-import * as log from "../../log";
-import * as utils from "../../utilities";
+const log = require("../../log");
+const utils = require("../../utilities");
 
-export interface ILightOptions {
-    intermediateDir?: string;
-
-    spdb?: boolean;
-    outFileName?: string;
-}
-
-export interface IHeatOptions {
-    intermediateDir?: string;
-
-    autoGenerateComponentGuids?: boolean;
-    generateGuidsNow?: boolean;
-    keepEmptyFolders?: boolean;
-    directoryId?: string;
-    rootDirectory?: string;
-    componentGroupName?: string;
-    xsltTemplatePath?: string;
-}
-
-export interface ICandleOptions {
-    intermediateDir?: string;
-
-    arch?: "x86" | "x64" | "ia64";
-    variables?: IDictionary<string>;
-}
-
-export function heat(options?: IHeatOptions): Readable & Writable {
+/**
+ * 
+ * @param {IHeatOptions} [options]
+ * @returns {NodeJS.ReadWriteStream}
+ */
+function heat(options) {
     options = options || Object.create(null);
     options.intermediateDir = tmp.dirSync({ unsafeCleanup: true }).name;
 
@@ -60,7 +41,7 @@ export function heat(options?: IHeatOptions): Readable & Writable {
     return new Transform({
         objectMode: true,
 
-        flush(callback: (err?: any) => void) {
+        flush(callback) {
             const filesWixPath = tmp.tmpNameSync({ dir: options.intermediateDir });
             const exeHeat = path.join(__dirname, "./wix/heat.exe");
             const argXslt = options.xsltTemplatePath ? `-t "${options.xsltTemplatePath}"` : "";
@@ -79,7 +60,11 @@ export function heat(options?: IHeatOptions): Readable & Writable {
             callback();
         },
 
-        transform(chunk: VinylFile, encoding: string, callback: (err?: any) => void): void {
+        /**
+         * 
+         * @param {import("vinyl")} chunk 
+         */
+        transform(chunk, encoding, callback) {
             if (chunk.isDirectory()) {
                 fs.mkdirSync(path.join(tempDir, chunk.relative));
             } else {
@@ -90,20 +75,27 @@ export function heat(options?: IHeatOptions): Readable & Writable {
         }
     });
 }
+exports.heat = heat;
 
-export function candle(options?: ICandleOptions): Readable & Writable {
+/**
+ * 
+ * @param {ICandleOptions} [options]
+ * @returns {NodeJS.ReadWriteStream}
+ */
+function candle(options) {
     options = options || Object.create(null);
     options.intermediateDir = tmp.dirSync({ unsafeCleanup: true }).name;
 
     options.variables = options.variables || Object.create(null);
     options.arch = options.arch || "x86";
 
-    const sourceFiles: Array<VinylFile> = [];
+    /** @type {Array.<import("vinyl")>} */
+    const sourceFiles = [];
 
     return new Transform({
         objectMode: true,
 
-        flush(callback: (err?: any) => void) {
+        flush(callback) {
             const wxsobjDir = tmp.dirSync({ dir: options.intermediateDir }).name;
             const exeCandle = path.join(__dirname, "./wix/candle.exe");
             const argSourceFiles = sourceFiles.map((file) => `"${file.path}"`).join(" ");
@@ -119,7 +111,11 @@ export function candle(options?: ICandleOptions): Readable & Writable {
             callback();
         },
 
-        transform(chunk: VinylFile, encoding: string, callback: (err?: any) => void): void {
+        /**
+         * 
+         * @param {import("vinyl")} chunk 
+         */
+        transform(chunk, encoding, callback) {
             if (!chunk.isDirectory()) {
                 sourceFiles.push(chunk);
             } else {
@@ -130,21 +126,30 @@ export function candle(options?: ICandleOptions): Readable & Writable {
         }
     });
 }
+exports.candle = candle;
 
-export function light(options?: ILightOptions): Readable & Writable {
+/**
+ * 
+ * @param {ILightOptions} [options]
+ * @returns {NodeJS.ReadWriteStream}
+ */
+function light(options) {
     options = options || Object.create(null);
     options.intermediateDir = tmp.dirSync({ unsafeCleanup: true }).name;
 
     options.spdb = options.spdb === true;
     options.outFileName = utils.string.isNullUndefinedOrWhitespaces(options.outFileName) ? "setup.msi" : options.outFileName;
 
-    let packDir: string;
-    const wxsObjs: Array<string> = [];
+    /** @type {string} */
+    let packDir;
+
+    /** @type {Array.<string>} */
+    const wxsObjs = [];
 
     return new Transform({
         objectMode: true,
 
-        flush(callback: (err?: any) => void): void {
+        flush(callback) {
             const exeLight = path.join(__dirname, "./wix/light.exe");
             const argSpdb = options.spdb ? "-spdb" : "";
             const outDir = tmp.dirSync({ dir: options.intermediateDir, unsafeCleanup: true }).name;
@@ -161,7 +166,11 @@ export function light(options?: ILightOptions): Readable & Writable {
             callback();
         },
 
-        transform(chunk: VinylFile, encoding: string, callback: (err?: any) => void): void {
+        /**
+         * 
+         * @param {import("vinyl")} chunk
+         */
+        transform(chunk, encoding, callback) {
             if (chunk.isDirectory()) {
                 packDir = chunk.path;
             } else {
@@ -172,3 +181,4 @@ export function light(options?: ILightOptions): Readable & Writable {
         }
     });
 }
+exports.light = light;

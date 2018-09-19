@@ -1,3 +1,6 @@
-/// <reference types="node" />
-import { Readable, Writable } from "stream";
-export declare function chain(...streams: Array<Readable & Writable | NodeJS.ReadWriteStream>): Readable & Writable;
+//-----------------------------------------------------------------------------
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License file under the project root for license information.
+//-----------------------------------------------------------------------------
+
+export declare function chain(...streams: Array<NodeJS.ReadWriteStream>): NodeJS.ReadWriteStream;

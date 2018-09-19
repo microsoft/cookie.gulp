@@ -111,7 +111,7 @@ function generateTaskByProcessors(taskDef, targetConfig) {
         throw new Error("taskDef.processors (Array<string>) must be provided.");
     }
 
-    /** @type {NodeJS.ReadWriteStream & NodeJS.WritableStream} */
+    /** @type {NodeJS.ReadWriteStream} */
     let lastProcessor;
 
     lastProcessor =

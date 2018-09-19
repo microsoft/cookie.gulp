@@ -3,6 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-export declare function normalizeGlobs(...globs: Array<string>): Array<string>;
+import { CompilerOptions } from "typescript";
 
-export declare function toGlobs(globlike: import("./configs").GlobLike, exts?: string | Array<string>): Array<string>;
+export declare function compile(options?: CompilerOptions): NodeJS.ReadWriteStream;

@@ -12,6 +12,11 @@ const fs = require("fs");
 const ts = require("typescript");
 const Vinyl = require("vinyl");
 
+/**
+ * 
+ * @param {import("typescript").DiagnosticCategory} category 
+ * @param {string} message 
+ */
 function writeMessage(category, message) {
     let logFunc;
 
@@ -30,11 +35,16 @@ function writeMessage(category, message) {
     logFunc(`[${ts.DiagnosticCategory[category]}] ${message}`);
 }
 
+/**
+ * 
+ * @param {import("typescript").Diagnostic} diagnostic 
+ * @param {string} basePath 
+ */
 function logDiagnostic(diagnostic, basePath) {
     if (diagnostic.file) {
         const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
         const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-        const fileName = typeof basePath === "string" || basePath instanceof String ? path.relative(basePath, path.resolve(diagnostic.file.fileName)) : "";
+        const fileName = typeof basePath === "string" ? path.relative(basePath, path.resolve(diagnostic.file.fileName)) : "";
 
         writeMessage(diagnostic.category, `${fileName} (${line + 1},${character + 1}): ${message}`)
     }
@@ -46,7 +56,7 @@ function logDiagnostic(diagnostic, basePath) {
 /**
  * Create a TypeScript compiling stream.
  * @param {import("typescript").CompilerOptions} options Compiler options.
- * @returns {Readable & Writable} 
+ * @returns {NodeJS.ReadWriteStream} 
  */
 exports.compile = function (options) {
     /** @type {{[filePath: string]: import("vinyl")}} */
@@ -54,16 +64,18 @@ exports.compile = function (options) {
 
     return new Transform({
         objectMode: true,
+        
         flush(callback) {
             const program = ts.createProgram(Object.values(files).map((file) => file.path), options);
             const emitResult = program.emit();
             const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
             const basePath = path.resolve(".");
 
+            /** @type {boolean} */
             let hasError = false;
 
             allDiagnostics.forEach(diagnostic => {
-                hasError |= diagnostic.category === ts.DiagnosticCategory.Error;
+                hasError = hasError || diagnostic.category === ts.DiagnosticCategory.Error;
                 logDiagnostic(diagnostic, basePath);
             });
 
@@ -91,6 +103,7 @@ exports.compile = function (options) {
 
             callback();
         },
+
         /**
          * @param {import("vinyl")} chunk
          */

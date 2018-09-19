@@ -5,4 +5,4 @@
 
 import * as gulp from "gulp";
 
-gulp.task("publish", gulp.series());
+gulp.task("publish", () => Promise.resolve());

@@ -3,10 +3,10 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-import * as gulp from "gulp";
+const gulp = require("gulp");
 
-import * as configs from "../configs";
-import { deleteAsync } from "../file-system";
+const configs = require("../configs");
+const { deleteAsync } = require("../file-system");
 
 gulp.task("clean", () => Promise.all([
     deleteAsync(configs.buildInfos.paths.intermediateDir),

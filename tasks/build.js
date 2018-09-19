@@ -3,6 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-import * as gulp from "gulp";
+const gulp = require("gulp");
 
-gulp.task("publish", () => Promise.resolve());
+gulp.task("build", () => Promise.resolve());

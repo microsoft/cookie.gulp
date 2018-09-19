@@ -11,10 +11,10 @@ const configs = require("./configs");
 
 const Regex = {
     /** @type {RegExp} */
-    PathRef = /^\<([^\<\>]+)\>$/ig,
+    PathRef: /^\<([^\<\>]+)\>$/ig,
 
     /** @type {RegExp} */
-    GlobLike = /[\^\*\!\+\?\@\|]+/ig
+    GlobLike: /[\^\*\!\+\?\@\|]+/ig
 };
 
 /**
@@ -48,7 +48,7 @@ exports.normalizeGlobs = normalizeGlobs;
 /**
  * 
  * @param {string} globlike 
- * @param {Array.<string>} exts 
+ * @param {Array.<string>} [exts]
  * @returns {Array.<string>} 
  */
 function toGlob(globlike, exts) {
@@ -92,7 +92,7 @@ function toGlob(globlike, exts) {
 
 /**
  * 
- * @param {import("./configs").GlobLike} globlike 
+ * @param {GlobLike} globlike 
  * @param {string | Array.<string>} exts 
  * @returns {Array.<string>}
  */
@@ -119,7 +119,9 @@ function toGlobs(globlike, exts) {
     const results = [];
 
     for (const globlikeItem of globlike) {
+        // @ts-ignore
         const globs = toGlob(globlikeItem, exts);
+
         results.push(...globs);
     }
 

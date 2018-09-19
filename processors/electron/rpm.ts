@@ -33,8 +33,8 @@ function toInstallerArch(arch: NodeJS.Architecture): string {
     }
 }
 
-function generateIconOptions(iconPath: IPath): any {
-    const iconFiles: Array<string> = glob.sync(globUtils.toGlobs(iconPath, "png"), { dot: true });
+function generateIconOptions(icons: GlobLike): any {
+    const iconFiles: Array<string> = glob.sync(globUtils.toGlobs(icons, "png"), { dot: true });
 
     if (!iconFiles || iconFiles.length <= 0) {
         return undefined;

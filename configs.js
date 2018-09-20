@@ -86,8 +86,7 @@ function generateBuildInfos() {
     }
 
     buildInfos.paths.buildDir = path.resolve(buildInfos.paths.buildDir);
-    fsUtils.createDirectory(buildInfos.paths.buildDir);
-
+    
     // publishDir
     if (utils.isNullOrUndefined(buildInfos.paths.publishDir)) {
         buildInfos.paths.publishDir = "./publish";
@@ -98,8 +97,7 @@ function generateBuildInfos() {
     }
 
     buildInfos.paths.publishDir = path.resolve(buildInfos.paths.publishDir);
-    fsUtils.createDirectory(buildInfos.paths.publishDir);
-
+    
     // intermediateDir
     if (utils.isNullOrUndefined(buildInfos.paths.intermediateDir)) {
         buildInfos.paths.intermediateDir = "./build/tmp";
@@ -110,8 +108,7 @@ function generateBuildInfos() {
     }
 
     buildInfos.paths.intermediateDir = path.resolve(buildInfos.paths.intermediateDir);
-    fsUtils.createDirectory(buildInfos.paths.intermediateDir);
-
+    
     /**
      * configs
      */

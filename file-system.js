@@ -62,12 +62,14 @@ function deleteAsync(targetPath) {
             // @ts-ignore
             (stat) => {
                 if (stat.isFile() || stat.isSymbolicLink()) {
-                    return exports.unlinkAsync(targetPath);
+                    return exports.unlinkAsync(targetPath)
+                        .catch((err) => err && err.code === "ENOENT" ? Promise.resolve() : Promise.reject(err));
                 }
                 else if (stat.isDirectory()) {
                     return exports.readDirAsync(targetPath)
                         .then((items) => Promise.all(items.map((item) => deleteAsync(path.join(targetPath, item)))))
-                        .then(() => exports.rmdirAsync(targetPath));
+                        .then(() => exports.rmdirAsync(targetPath))
+                        .catch((err) => err && err.code === "ENOENT" ? Promise.resolve() : Promise.reject(err));
                 }
                 else {
                     return Promise.reject(`Not supported targetPath: ${targetPath}`);

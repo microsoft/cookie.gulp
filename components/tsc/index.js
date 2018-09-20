@@ -68,6 +68,10 @@ exports.compile = function (options) {
             // https://github.com/Microsoft/TypeScript/blob/194c2bc2ca806f5f1014113329e33207f683037c/src/compiler/emitter.ts#L81
             options["listEmittedFiles"] = true;
 
+            if (options.sourceRoot) {
+                options.sourceRoot = path.resolve(options.sourceRoot);
+            }
+
             const program = ts.createProgram(Object.values(files).map((file) => file.path), options);
             const emitResult = program.emit();
             const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);

@@ -10,7 +10,7 @@ const path = require("path");
 const cp = require("child_process");
 const glob = require("fast-glob");
 
-const gulpUtils = require("./glob-utils");
+const globUtils = require("./glob-utils");
 const utils = require("./utilities");
 const configs = require("./configs");
 const { installDynamicDependencies } = require("./dynamic-dependency");
@@ -34,9 +34,13 @@ function executeSubTasks(taskName) {
     /** @type {Array.<import("undertaker").TaskFunction>} */
     const taskFuncs = [];
 
-    for (const gulpfile of glob.sync("**/gulpfile.js", { dot: true })) {
+    for (const gulpfile of glob.sync(globUtils.applyIgnores("**/gulpfile.js", "!./gulpfile.js"), { dot: true })) {
         // @ts-ignore
         taskFuncs.push(executeGulp.bind(null, taskName, path.dirname(gulpfile)));
+    }
+
+    if (taskFuncs.length <= 0) {
+        return undefined;
     }
 
     return gulp.series(taskFuncs);
@@ -96,7 +100,9 @@ function registerTaskByBuildTaskTree(taskName, tasks) {
         return;
     }
 
-    gulp.task(taskName, gulp.series(task, executeSubTasks(taskName)));
+    const subTask = executeSubTasks(taskName);
+
+    gulp.task(taskName, subTask ? gulp.series(task, subTask) : task);
 }
 
 /**
@@ -106,7 +112,7 @@ function registerTaskByBuildTaskTree(taskName, tasks) {
  * @returns {import("undertaker").TaskFunction}
  */
 function generateTaskByProcessors(taskDef, targetConfig) {
-    if (!Array.isArray(taskDef.processors) || taskDef.processors.length <= 0) {
+    if (!Array.isArray(taskDef.processors)) {
         throw new Error("taskDef.processors (Array<string>) must be provided.");
     }
 
@@ -115,7 +121,7 @@ function generateTaskByProcessors(taskDef, targetConfig) {
         let lastProcessor;
 
         lastProcessor =
-            gulp.src(taskDef.sources ? gulpUtils.toGlobs(taskDef.sources) : gulpUtils.normalizeGlobs("**/*"), { dot: true });
+            gulp.src(taskDef.sources ? globUtils.toGlobs(taskDef.sources) : globUtils.normalizeGlobs("**/*"), { dot: true });
 
         for (const processorRef of taskDef.processors) {
             /** @type {string} */
@@ -141,7 +147,14 @@ function generateTaskByProcessors(taskDef, targetConfig) {
                 lastProcessor.pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
         }
 
-        return lastProcessor.pipe(gulp.dest(taskDef.dest || configs.buildInfos.paths.buildDir, { overwrite: true }));
+        let dest = taskDef.dest || configs.buildInfos.paths.buildDir;
+        const destMatchResult = globUtils.Regex.PathRef.exec(dest);
+
+        if (destMatchResult) {
+            dest = configs.buildInfos.paths[destMatchResult[1]];
+        }
+
+        return lastProcessor.pipe(gulp.dest(dest, { overwrite: true }));
     }
 }
 
@@ -151,7 +164,8 @@ function generateTaskByProcessors(taskDef, targetConfig) {
  * @param {IBuildTaskDefinition} taskDef 
  */
 function registerTaskByProcessors(taskName, taskDef) {
-    if (configs.buildInfos.targets.length <= 0) {
+    if (configs.buildInfos.targets.length <= 0
+        || taskDef["ignore-target"] === true) {
         gulp.task(taskName, generateTaskByProcessors(taskDef, undefined));
 
         return;

@@ -9,7 +9,6 @@ const VinylFile = require("vinyl");
 const fs = require("fs");
 const path = require("path");
 const glob = require("fast-glob");
-const tmp = require("tmp");
 
 const utils = require("../utilities");
 
@@ -36,41 +35,52 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
         objectMode: true,
 
         flush(callback) {
-            const noticeFileObj = tmp.fileSync({ dir: buildInfos.paths.intermediateDir });
-            const fd = noticeFileObj.fd;
+            const noticeFileName = path.join(buildInfos.paths.intermediateDir, "ThirdPartyNotice.txt");
+            const fd = fs.openSync(noticeFileName, "w+");
 
-            // Write headers.
-            fs.writeSync(fd, "THIRD-PARTY SOFTWARE NOTICES AND INFORMATION\r\n");
-            fs.writeSync(fd, "Do Not Translate or Localize\r\n");
-            fs.writeSync(fd, "\r\n");
-            fs.writeSync(fd, `${buildInfos.productName} incorporates components from the projects listed below.`);
-            fs.writeSync(fd, `The original copyright notices and the licenses under which ${packageJson.author} received such components are set forth below.`);
-            fs.writeSync(fd, `${packageJson.author} reserves all rights not expressly granted herein, whether by implication, estoppel or otherwise.\r\n`);
-            fs.writeSync(fd, "\r\n");
+            try {
+                // Write headers.
+                fs.writeSync(fd, "THIRD-PARTY SOFTWARE NOTICES AND INFORMATION\r\n");
+                fs.writeSync(fd, "Do Not Translate or Localize\r\n");
+                fs.writeSync(fd, "\r\n");
+                fs.writeSync(fd, `${buildInfos.productName} incorporates components from the projects listed below. `);
+                fs.writeSync(fd, `The original copyright notices and the licenses under which ${packageJson.author} received such components are set forth below. `);
+                fs.writeSync(fd, `${packageJson.author} reserves all rights not expressly granted herein, whether by implication, estoppel or otherwise.\r\n`);
+                fs.writeSync(fd, "\r\n");
 
-            const depLicenseInfos = Object.values(depLicenses);
+                const depLicenseInfos = Object.values(depLicenses);
 
-            // Write Index.
-            for (let depIndex = 0; depIndex < depLicenseInfos.length; depIndex++) {
-                const info = depLicenseInfos[depIndex];
+                // Write Index.
+                for (let depIndex = 0; depIndex < depLicenseInfos.length; depIndex++) {
+                    const info = depLicenseInfos[depIndex];
 
-                fs.writeSync(fd, `${depIndex + 1}.\t${info.name} (${info.homepage})\r\n`);
+                    fs.writeSync(fd, `${depIndex + 1}.\t${info.name} (${info.homepage})\r\n`);
+                }
+
+                // Write license.
+                for (let depIndex = 0; depIndex < depLicenseInfos.length; depIndex++) {
+                    const info = depLicenseInfos[depIndex];
+
+                    fs.writeSync(fd, "\r\n");
+                    fs.writeSync(fd, `${info.name} NOTICES AND INFORMATION BEGIN HERE\r\n`);
+                    fs.writeSync(fd, "=========================================\r\n");
+                    fs.writeSync(fd, fs.readFileSync(info.licensePath, "utf8"));
+                    fs.writeSync(fd, "\r\n");
+                    fs.writeSync(fd, "=========================================\r\n");
+                    fs.writeSync(fd, `END OF ${info.name} NOTICES AND INFORMATION\r\n`);
+                }
+            } finally {
+                if (fd > 0) {
+                    fs.closeSync(fd);
+                }
             }
 
-            // Write license.
-            for (let depIndex = 0; depIndex < depLicenseInfos.length; depIndex++) {
-                const info = depLicenseInfos[depIndex];
+            this.push(new VinylFile({
+                base: buildInfos.paths.intermediateDir,
+                path: noticeFileName,
+                contents: fs.createReadStream(noticeFileName)
+            }));
 
-                fs.writeSync(fd, "\r\n");
-                fs.writeSync(fd, `${info.name} NOTICES AND INFORMATION BEGIN HERE\r\n`);
-                fs.writeSync(fd, "=========================================\r\n");
-                fs.writeSync(fd, fs.readFileSync(info.licensePath, "utf8"));
-                fs.writeSync(fd, "\r\n");
-                fs.writeSync(fd, "=========================================\r\n");
-                fs.writeSync(fd, `END OF ${info.name} NOTICES AND INFORMATION\r\n`);
-            }
-
-            this.push(new VinylFile({ path: noticeFileObj.name }));
             callback();
         },
 
@@ -127,7 +137,9 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 const licenseFiles = glob.sync(
                     [
                         path.join(nodeModulesDir, depName, "LICENSE"),
-                        path.join(nodeModulesDir, depName, "LICENSE.*")
+                        path.join(nodeModulesDir, depName, "LICENSE.*"),
+                        path.join(nodeModulesDir, depName, "README"),
+                        path.join(nodeModulesDir, depName, "README.*")
                     ],
                     { case: false, nocase: true, dot: true });
 

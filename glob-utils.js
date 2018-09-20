@@ -15,13 +15,13 @@ const Regex = {
     /** @type {RegExp} */
     GlobLike: /[\^\*\!\+\?\@\|]+/ig
 };
+exports.Regex = Regex;
 
 /**
  * 
- * @param  {Array.<string>} globs 
- * @returns {Array.<string>}
+ * @param  {...string} [globs]
  */
-function normalizeGlobs(...globs) {
+function applyIgnores(...globs) {
     /** @type {Array.<string>} */
     const ignoredGlobs = [];
 
@@ -33,6 +33,22 @@ function normalizeGlobs(...globs) {
             ignoredGlobs.push("!" + rawGlob);
         }
     }
+
+    if (!globs) {
+        return ignoredGlobs;
+    }
+
+    return [...globs, ...ignoredGlobs];
+}
+exports.applyIgnores = applyIgnores;
+
+/**
+ * 
+ * @param  {Array.<string>} globs 
+ * @returns {Array.<string>}
+ */
+function normalizeGlobs(...globs) {
+    const ignoredGlobs = exports.applyIgnores();
 
     /** @type {Array.<string>} */
     const gulpfiles =

@@ -31,11 +31,12 @@ declare interface IProcessorConfig extends IDictionary<any> {
 declare interface IBuildTaskDefinition {
     sources?: GlobLike;
     dest?: string;
+    "ignore-target"?: boolean;
     processors: Array<string | IProcessorConfig>;
 }
 
 declare interface IBuildTaskGroup {
-    executionModel: ExecutionModel;
+    executionModel?: ExecutionModel;
     tasks: Array<string | IBuildTaskGroup>;
 }
 
@@ -51,10 +52,12 @@ declare interface IBuildTaskDictionary {
 }
 
 declare interface IBuildTaskConfigDictionary extends IDictionary<any> {
+    "clean"?: ICleanTaskConfig; 
 }
 
 declare interface IBuildProcessorConfigDictionary extends IDictionary<any> {
     "msi"?: IMsiProcessorConfig;
+    "pass"?: IPassProcessorConfig;
     "electron/pack"?: IElectronPackageProcessorConfig;
     "electron/deb"? : IElectronLinuxInstallerProcessorConfig;
     "electron/rpm"? : IElectronLinuxInstallerProcessorConfig;

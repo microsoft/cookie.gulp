@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const fs = require("fs");
 const path = require("path");
@@ -24,8 +23,10 @@ function createDirectory(dir) {
     if (utils.string.isNullUndefinedOrWhitespaces(dir)) {
         throw new Error("dir must be provided (not null/undefined/whitespaces).");
     }
+    
+    dir = path.relative(path.resolve("."), dir);
 
-    const parts = dir.split("/");
+    const parts = dir.includes("/") ? dir.split("/") : dir.split("\\");
     let currentDir = "";
 
     for (const part of parts) {

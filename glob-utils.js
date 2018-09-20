@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const glob = require("fast-glob");
 const path = require("path");
@@ -24,22 +23,27 @@ const Regex = {
  */
 function normalizeGlobs(...globs) {
     /** @type {Array.<string>} */
-    const gulpfiles = glob.sync("**/gulpfile.js");
-
-    /** @type {Array.<string>} */
-    const outputGlobs = [];
-
-    outputGlobs.push(...globs);
-    outputGlobs.push(...gulpfiles.map(((fileName) => "!" + path.join(path.dirname(fileName), "**", "*"))));
+    const ignoredGlobs = [];
 
     for (const ignoredPath of configs.buildInfos.ignores) {
         /** @type {Array.<string>} */
-        const ignoredGlobs = toGlob(ignoredPath);
+        const rawGlobs = toGlob(ignoredPath);
 
-        for (const ignoredGlob of ignoredGlobs) {
-            outputGlobs.push("!" + ignoredGlob);
+        for (const rawGlob of rawGlobs) {
+            ignoredGlobs.push("!" + rawGlob);
         }
     }
+
+    /** @type {Array.<string>} */
+    const gulpfiles =
+        glob.sync(["**/gulpfile.js", "!./gulpfile.js", ...ignoredGlobs], { dot: true });
+
+    /** @type {Array.<string>} */
+    const outputGlobs = [
+        ...globs,
+        ...gulpfiles.map(((fileName) => "!" + path.join(path.dirname(fileName), "**", "*"))),
+        ...ignoredGlobs
+    ];
 
     return outputGlobs;
 }

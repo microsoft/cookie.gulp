@@ -2,9 +2,7 @@
 // Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
-
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const { Transform } = require("stream");
 const path = require("path");
@@ -59,7 +57,7 @@ function logDiagnostic(diagnostic, basePath) {
  * @returns {NodeJS.ReadWriteStream} 
  */
 exports.compile = function (options) {
-    /** @type {{[filePath: string]: import("vinyl")}} */
+    /** @type {IDictionary.<import("vinyl")>} */
     const files = {};
 
     return new Transform({

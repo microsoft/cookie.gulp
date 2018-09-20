@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const cp = require("child_process");
 const log = require("./log");
@@ -95,7 +94,7 @@ function areConditionsMatched(depName, dep) {
   */
 function installDynamicDependency(depName, dep) {
     const npmCmd =
-        String.format("npm install {}{} {}",
+        "npm install {}{} {}".format(
             depName,
             dep.version ? "@" + dep.version : "",
             Array.isArray(dep.depTypes)

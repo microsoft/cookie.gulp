@@ -10,6 +10,7 @@ const path = require("path");
 const cp = require("child_process");
 const glob = require("fast-glob");
 
+const log = require("./components/log");
 const gulpUtils = require("./glob-utils");
 const utils = require("./utilities");
 const configs = require("./configs");
@@ -110,39 +111,40 @@ function generateTaskByProcessors(taskDef, targetConfig) {
         throw new Error("taskDef.processors (Array<string>) must be provided.");
     }
 
-    /** @type {NodeJS.ReadWriteStream} */
-    let lastProcessor;
-
-    lastProcessor =
-        gulp.src(taskDef.sources ? gulpUtils.toGlobs(taskDef.sources) : gulpUtils.normalizeGlobs("**/*"), { dot: true });
-
-    for (const processorRef of taskDef.processors) {
-        /** @type {string} */
-        let processorName;
-
-        if (utils.isString(processorRef)) {
-            processorName = processorRef;
-        } else {
-            processorName = processorRef.name;
-        }
-
-        if (utils.string.isNullUndefinedOrWhitespaces(processorName)) {
-            throw new Error("processor name must be provided. (null/undefined/empty/whitespaces are not acceptable).");
-        }
-
-        /** @type {*} */
-        const processorConfig = Object.assign(Object.create(null), configs.buildInfos.configs.processors[processorName], utils.isString(processorRef) ? null : processorRef);
-
-        /** @type {ProcessorConstructor} */
-        const constructProcessor = require(`./processors/${processorName}`);
+    return () => {
+        /** @type {NodeJS.ReadWriteStream} */
+        let lastProcessor;
 
         lastProcessor =
-            lastProcessor.pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
+            gulp.src(taskDef.sources ? gulpUtils.toGlobs(taskDef.sources) : gulpUtils.normalizeGlobs("**/*"), { dot: true });
+
+        for (const processorRef of taskDef.processors) {
+            /** @type {string} */
+            let processorName;
+
+            if (utils.isString(processorRef)) {
+                processorName = processorRef;
+            } else {
+                processorName = processorRef.name;
+            }
+
+            if (utils.string.isNullUndefinedOrWhitespaces(processorName)) {
+                throw new Error("processor name must be provided. (null/undefined/empty/whitespaces are not acceptable).");
+            }
+
+            /** @type {*} */
+            const processorConfig = Object.assign(Object.create(null), configs.buildInfos.configs.processors[processorName], utils.isString(processorRef) ? null : processorRef);
+
+            /** @type {ProcessorConstructor} */
+            const constructProcessor = require(`./processors/${processorName}`);
+
+            lastProcessor =
+                lastProcessor.pipe(log())
+                    .pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
+        }
+
+        return lastProcessor.pipe(gulp.dest(taskDef.dest || configs.buildInfos.paths.buildDir, { overwrite: true }));
     }
-
-    lastProcessor = lastProcessor.pipe(gulp.dest(taskDef.dest || configs.buildInfos.paths.buildDir, { overwrite: true }));
-
-    return () => lastProcessor;
 }
 
 /**
@@ -161,6 +163,10 @@ function registerTaskByProcessors(taskName, taskDef) {
     const subTasks = [];
 
     for (const targetConfig of configs.buildInfos.targets) {
+        if (targetConfig.platform !== process.platform) {
+            continue;
+        }
+
         const subTaskName = `${taskName}:${targetConfig.platform}`;
 
         subTasks.push(subTaskName);
@@ -247,24 +253,11 @@ function importTasks(tasksPath = "./tasks") {
     }
 }
 
-/**
- * 
- * @param {import("undertaker-registry")} registry 
- */
-function initialize(registry) {
-    if (!registry) {
-        throw new Error("registry must be provided (undertaker-registry).");
-    }
+// Import pre-defined tasks.
+importTasks();
 
-    gulp.registry(registry);
+// Install dynamic dependencies.
+installDynamicDependencies();
 
-    // Import pre-defined tasks.
-    importTasks();
-
-    // Install dynamic dependencies.
-    installDynamicDependencies();
-
-    // Configure tasks.
-    configureTasks();
-}
-module.exports = initialize;
+// Configure tasks.
+configureTasks();

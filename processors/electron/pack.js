@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const { Transform } = require("stream");
 const fs = require("fs");

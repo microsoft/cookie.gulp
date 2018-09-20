@@ -44,8 +44,6 @@ function typescript(config, buildTarget, buildInfos, packageJson) {
     const tsconfig = loadTsConfigJson();
 
     if (utils.string.isNullUndefinedOrWhitespaces(tsconfig.compilerOptions.outDir)) {
-        log.warning("TypeScript", "tsconfig.json", "tsconfig.json:outDir is not specified. A temp directory is created and assigned to it.");
-
         tsconfig.compilerOptions.outDir = tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name;
     }
 

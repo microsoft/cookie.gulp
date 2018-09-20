@@ -52,15 +52,15 @@ declare interface IBuildTaskDictionary {
 }
 
 declare interface IBuildTaskConfigDictionary extends IDictionary<any> {
-    "clean"?: ICleanTaskConfig; 
+    "clean"?: ICleanTaskConfig;
 }
 
 declare interface IBuildProcessorConfigDictionary extends IDictionary<any> {
     "msi"?: IMsiProcessorConfig;
     "pass"?: IPassProcessorConfig;
     "electron/pack"?: IElectronPackageProcessorConfig;
-    "electron/deb"? : IElectronLinuxInstallerProcessorConfig;
-    "electron/rpm"? : IElectronLinuxInstallerProcessorConfig;
+    "electron/deb"?: IElectronLinuxInstallerProcessorConfig;
+    "electron/rpm"?: IElectronLinuxInstallerProcessorConfig;
 }
 
 declare interface IBuildInfos {
@@ -69,7 +69,7 @@ declare interface IBuildInfos {
 
     description?: string;
     copyright?: string;
-    
+
     buildNumber?: string;
 
     tasks?: IBuildTaskDictionary;

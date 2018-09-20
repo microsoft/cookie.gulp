@@ -7,7 +7,6 @@
 const fs = require("fs");
 const path = require("path");
 
-const fsUtils = require("./file-system");
 const log = require("./log");
 const utils = require("./utilities");
 

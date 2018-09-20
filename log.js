@@ -26,7 +26,7 @@ class Log {
      */
     write(level, ...args) {
         /** @type {string} */
-        const timestamp = `[${new Date().toLocaleISOString()}]`;
+        const timestamp = `[${new Date().format("HH:mm:ss")}]`;
 
         switch (level) {
             case "info":

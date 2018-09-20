@@ -109,9 +109,10 @@ declare global {
 
     interface Date {
         /**
-         *
-         * @returns {string} The locale date in ISO format.
+         * Format the current date.
+         * @param {string} format The date format.
+         * @returns {string} The formatted date.
          */
-        toLocaleISOString: () => string;
+        format(format: string): string;
     }
 }

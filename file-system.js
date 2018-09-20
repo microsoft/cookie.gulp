@@ -23,7 +23,7 @@ function createDirectory(dir) {
     if (utils.string.isNullUndefinedOrWhitespaces(dir)) {
         throw new Error("dir must be provided (not null/undefined/whitespaces).");
     }
-    
+
     dir = path.relative(path.resolve("."), dir);
 
     const parts = dir.includes("/") ? dir.split("/") : dir.split("\\");
@@ -61,12 +61,13 @@ function deleteAsync(targetPath) {
         .then(
             // @ts-ignore
             (stat) => {
-                if (stat.isFile || stat.isSymbolicLink) {
+                if (stat.isFile() || stat.isSymbolicLink()) {
                     return exports.unlinkAsync(targetPath);
                 }
                 else if (stat.isDirectory()) {
                     return exports.readDirAsync(targetPath)
-                        .then((items) => Promise.all(items.map((item) => deleteAsync(path.join(targetPath, item)))));
+                        .then((items) => Promise.all(items.map((item) => deleteAsync(path.join(targetPath, item)))))
+                        .then(() => exports.rmdirAsync(targetPath));
                 }
                 else {
                     return Promise.reject(`Not supported targetPath: ${targetPath}`);

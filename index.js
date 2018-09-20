@@ -10,7 +10,6 @@ const path = require("path");
 const cp = require("child_process");
 const glob = require("fast-glob");
 
-const log = require("./components/log");
 const gulpUtils = require("./glob-utils");
 const utils = require("./utilities");
 const configs = require("./configs");
@@ -139,8 +138,7 @@ function generateTaskByProcessors(taskDef, targetConfig) {
             const constructProcessor = require(`./processors/${processorName}`);
 
             lastProcessor =
-                lastProcessor.pipe(log())
-                    .pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
+                lastProcessor.pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
         }
 
         return lastProcessor.pipe(gulp.dest(taskDef.dest || configs.buildInfos.paths.buildDir, { overwrite: true }));
@@ -226,7 +224,7 @@ function configureTasks() {
  * 
  * @param {string} tasksPath 
  */
-function importTasks(tasksPath = "./tasks") {
+function importTasks(tasksPath = path.join(__dirname, "./tasks")) {
     tasksPath = path.resolve(tasksPath);
 
     try {

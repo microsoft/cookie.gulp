@@ -243,15 +243,38 @@ function padLeft(num, length) {
 }
 
 /**
+ * @param {string} format
  * @returns {string}
  */
-Date.prototype.toLocaleISOString = function () {
-    return this.getUTCFullYear() +
-        "-" + padLeft(this.getMonth(), 2) +
-        "-" + padLeft(this.getDate(), 2) +
-        "T" + padLeft(this.getHours(), 2) +
-        ":" + padLeft(this.getMinutes(), 2) +
-        ":" + padLeft(this.getSeconds(), 2) +
-        "." + (this.getMilliseconds() / 1000).toFixed(3).slice(2, 5) +
-        (this.getTimezoneOffset() === 0 ? "Z" : "");
+Date.prototype.format = function (format) {
+    return format
+        // Year
+        .replace("yyyy", padLeft(this.getFullYear(), 4))
+        .replace("yy", this.getFullYear().toString().substr(2, 2))
+
+        // Month
+        .replace("MM", padLeft(this.getMonth(), 2))
+        .replace("M", padLeft(this.getMonth(), 1))
+
+        // Day of Month
+        .replace("dd", padLeft(this.getDate(), 2))
+        .replace("d", padLeft(this.getDate(), 1))
+
+        // Hours
+        .replace("HH", padLeft(this.getHours(), 2))
+        .replace("H", padLeft(this.getHours(), 1))
+
+        // Minutes
+        .replace("mm", padLeft(this.getMinutes(), 2))
+        .replace("m", padLeft(this.getMinutes(), 1))
+
+        // Seconds
+        .replace("ss", padLeft(this.getSeconds(), 2))
+        .replace("s", padLeft(this.getSeconds(), 1))
+
+        // Thousandths of Second
+        .replace("fff", padLeft(this.getMilliseconds(), 3))
+        .replace("ff", padLeft(this.getMilliseconds(), 2))
+        .replace("f", padLeft(this.getMilliseconds(), 1));
 };
+

@@ -65,6 +65,8 @@ function toGlob(globlike, exts) {
     /** @type {string} */
     let glob;
 
+    globlike = globlike.replace(/[\\|\/]/ig, path.sep);
+
     if (regexResult = Regex.PathRef.exec(globlike)) {
         glob = configs.buildInfos.paths[regexResult[1]];
 

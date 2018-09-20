@@ -64,6 +64,10 @@ exports.compile = function (options) {
         objectMode: true,
         
         flush(callback) {
+            // this is a tsc internal switch.
+            // https://github.com/Microsoft/TypeScript/blob/194c2bc2ca806f5f1014113329e33207f683037c/src/compiler/emitter.ts#L81
+            options["listEmittedFiles"] = true;
+
             const program = ts.createProgram(Object.values(files).map((file) => file.path), options);
             const emitResult = program.emit();
             const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
@@ -92,6 +96,7 @@ exports.compile = function (options) {
                         this.push(files[emittedFileId]);
                     } else {
                         this.push(new Vinyl({
+                            base: options.outDir,
                             path: emittedFilePath,
                             contents: fs.createReadStream(emittedFilePath)
                         }));

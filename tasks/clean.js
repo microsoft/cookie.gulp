@@ -11,13 +11,10 @@ const globUtils = require("../glob-utils");
 const configs = require("../configs");
 const { deleteAsync } = require("../file-system");
 
-gulp.task("clean", () => {
-    /** @type {Array.<Promise>} */
-    const cleanPromises = [];
-
-    cleanPromises.push(deleteAsync(configs.buildInfos.paths.intermediateDir));
-    cleanPromises.push(deleteAsync(configs.buildInfos.paths.buildDir));
-    cleanPromises.push(deleteAsync(configs.buildInfos.paths.publishDir));
+gulp.task("clean", async () => {
+    await deleteAsync(configs.buildInfos.paths.intermediateDir);
+    await deleteAsync(configs.buildInfos.paths.buildDir);
+    await deleteAsync(configs.buildInfos.paths.publishDir);
 
     if (configs.buildInfos.configs.tasks.clean
         && !utils.array.isNullUndefinedOrEmpty(configs.buildInfos.configs.tasks.clean.globs)) {
@@ -26,16 +23,14 @@ gulp.task("clean", () => {
             glob.sync(configs.buildInfos.configs.tasks.clean.globs, { dot: true })
                 .map(
                     /** @param {string} filePath */
-                    (filePath) => deleteAsync(filePath));
+                    async (filePath) => await deleteAsync(filePath));
 
-        cleanPromises.push(...additionalPromises);
+        await Promise.all(additionalPromises);
 
         for (const globItem of configs.buildInfos.configs.tasks.clean.globs) {
             if (!globUtils.Regex.GlobLike.test(globItem)) {
-                cleanPromises.push(deleteAsync(globItem));
+                await deleteAsync(globItem);
             }
         }
     }
-
-    return Promise.all(cleanPromises);
 });

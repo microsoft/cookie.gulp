@@ -7,6 +7,7 @@
 const fs = require("fs");
 const path = require("path");
 
+const globUtils = require("./glob-utils");
 const log = require("./log");
 const utils = require("./utilities");
 
@@ -59,7 +60,7 @@ function generateBuildInfos() {
     /**
      * buildNumber
      */
-    if (buildInfos.buildNumber === "*") {
+    if (!buildInfos.buildNumber) {
         log.info("Config", "BuildInfos", "evn:BUILD_BUILDNUMBER", "=", process.env["BUILD_BUILDNUMBER"]);
         log.info("Config", "BuildInfos", "package.json:version", "=", exports.packageJson.version);
 
@@ -80,34 +81,20 @@ function generateBuildInfos() {
         buildInfos.paths.buildDir = "./build/out";
     }
 
-    if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.buildDir)) {
-        throw new Error(`${buildInfosJsonPath}:paths.buildDir must be specified.`);
-    }
-
-    buildInfos.paths.buildDir = path.resolve(buildInfos.paths.buildDir);
-    
     // publishDir
     if (utils.isNullOrUndefined(buildInfos.paths.publishDir)) {
         buildInfos.paths.publishDir = "./publish";
     }
 
-    if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.publishDir)) {
-        throw new Error(`${buildInfosJsonPath}:paths.publishDir must be specified.`);
-    }
-
-    buildInfos.paths.publishDir = path.resolve(buildInfos.paths.publishDir);
-    
     // intermediateDir
     if (utils.isNullOrUndefined(buildInfos.paths.intermediateDir)) {
         buildInfos.paths.intermediateDir = "./build/tmp";
     }
 
-    if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.intermediateDir)) {
-        throw new Error(`${buildInfosJsonPath}:paths.intermediateDir must be specified.`);
+    for (const pathName in buildInfos.paths) {
+        buildInfos.paths[pathName] = path.resolve(buildInfos.paths[pathName]);
     }
 
-    buildInfos.paths.intermediateDir = path.resolve(buildInfos.paths.intermediateDir);
-    
     /**
      * configs
      */

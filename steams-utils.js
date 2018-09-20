@@ -26,6 +26,11 @@ function chain(...streams) {
     const headStream = streams[0];
     const proxy = new Transform({
         objectMode: true,
+
+        flush(callback) {
+            headStream.end();
+        },
+
         transform(chunk, encoding, callback) {
             headStream.write(chunk);
             callback();
@@ -34,8 +39,14 @@ function chain(...streams) {
 
     lastStream.pipe(new Writable({
         objectMode: true,
+
         write(chunk, encoding, callback) {
             proxy.push(chunk);
+            callback();
+        },
+
+        final(callback) {
+            proxy.push(null);
             callback();
         }
     }));

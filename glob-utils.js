@@ -10,7 +10,7 @@ const configs = require("./configs");
 
 const Regex = {
     /** @type {RegExp} */
-    PathRef: /^\<([^\<\>]+)\>$/ig,
+    PathRef: /\<([^\<\>]+)\>/ig,
 
     /** @type {RegExp} */
     GlobLike: /[\^\*\!\+\?\@\|]+/ig
@@ -54,10 +54,11 @@ function normalizeGlobs(...globs) {
     const gulpfiles =
         glob.sync(["**/gulpfile.js", "!./gulpfile.js", ...ignoredGlobs], { dot: true });
 
+    ignoredGlobs.push(...gulpfiles.map(((fileName) => "!" + path.join(path.dirname(fileName), "**", "*"))));
+
     /** @type {Array.<string>} */
     const outputGlobs = [
         ...globs,
-        ...gulpfiles.map(((fileName) => "!" + path.join(path.dirname(fileName), "**", "*"))),
         ...ignoredGlobs
     ];
 
@@ -75,37 +76,28 @@ function toGlob(globlike, exts) {
     /** @type {Array.<string>} */
     const finalizedGlobs = [];
 
-    /** @type {RegExpExecArray} */
-    let regexResult;
+    globlike = globlike
+        .replace(/[\\|\/]/ig, path.sep)
+        .replace(Regex.PathRef, (match, pathName) => configs.buildInfos.paths[pathName]);
 
-    /** @type {string} */
-    let glob;
-
-    globlike = globlike.replace(/[\\|\/]/ig, path.sep);
-
-    if (regexResult = Regex.PathRef.exec(globlike)) {
-        glob = configs.buildInfos.paths[regexResult[1]];
-
-    } else if (regexResult = Regex.GlobLike.exec(globlike)) {
+    if (Regex.GlobLike.test(globlike)) {
         finalizedGlobs.push(globlike);
+        
         return finalizedGlobs;
-
-    } else {
-        glob = globlike;
     }
 
     if (!exts || exts.length <= 0) {
-        if (glob.endsWith("/") || glob.endsWith("\\")) {
-            finalizedGlobs.push(glob.substr(0, glob.length - 1));
+        if (globlike.endsWith("/") || globlike.endsWith("\\")) {
+            finalizedGlobs.push(globlike.substr(0, glob.length - 1));
         } else {
-            finalizedGlobs.push(glob);
+            finalizedGlobs.push(globlike);
         }
 
-        finalizedGlobs.push(path.join(glob, "**", "*"));
+        finalizedGlobs.push(path.join(globlike, "**", "*"));
 
     } else {
         for (const ext of exts) {
-            finalizedGlobs.push(path.join(glob, "**", `*.${ext}`));
+            finalizedGlobs.push(path.join(globlike, "**", `*.${ext}`));
         }
     }
 

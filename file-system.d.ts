@@ -20,3 +20,5 @@ export declare function existsAsync(path: PathLike): Promise<boolean>;
 export declare function deleteAsync(targetPath: string): Promise<void>;
 
 export declare function createDirectory(dir: string): void;
+
+export declare function vinyl(filePath: string, base?: string): import("vinyl");

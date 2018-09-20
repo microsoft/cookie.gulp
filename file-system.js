@@ -7,6 +7,7 @@
 const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
+const VinylFile = require("vinyl");
 
 const utils = require("./utilities");
 
@@ -86,3 +87,21 @@ function deleteAsync(targetPath) {
             });
 }
 exports.deleteAsync = deleteAsync;
+
+/**
+ * Create a Vinyl File object.
+ * @param {string} filePath,
+ * @param {string} [base]
+ * @returns {import("vinyl")}
+ */
+function vinyl(filePath, base) {
+    const stat = fs.statSync(filePath);
+
+    return new VinylFile({
+        path: filePath,
+        base: base,
+        stat: stat,
+        contents: stat.isFile() ? fs.createReadStream(filePath) : undefined
+    });
+}
+exports.vinyl = vinyl;

@@ -73,10 +73,6 @@ function isBuildTaskDef(value) {
  * @returns {import("undertaker").TaskFunction}
  */
 function generateTaskByBuildTaskTree(taskTree) {
-    if (utils.isNullOrUndefined(taskTree)) {
-        return undefined;
-    }
-
     const executionModel = Array.isArray(taskTree) ? "series" : taskTree.executionModel;
     const targetTasks = Array.isArray(taskTree) ? taskTree : taskTree.tasks;
     const createTaskFn = executionModel === "parallel" ? gulp.parallel : gulp.series;
@@ -93,13 +89,6 @@ function generateTaskByBuildTaskTree(taskTree) {
  */
 function registerTaskByBuildTaskTree(taskName, tasks) {
     const task = generateTaskByBuildTaskTree(tasks);
-
-    if (!task) {
-        gulp.registry().set(taskName, undefined);
-
-        return;
-    }
-
     const subTask = executeSubTasks(taskName);
 
     gulp.task(taskName, subTask ? gulp.series(task, subTask) : task);
@@ -148,12 +137,9 @@ function generateTaskByProcessors(taskDef, targetConfig) {
         }
 
         let dest = taskDef.dest || configs.buildInfos.paths.buildDir;
-        const destMatchResult = globUtils.Regex.PathRef.exec(dest);
 
-        if (destMatchResult) {
-            dest = configs.buildInfos.paths[destMatchResult[1]];
-        }
-
+        dest = dest.replace(globUtils.Regex.PathRef, (match, pathName) => configs.buildInfos.paths[pathName]);
+        
         return lastProcessor.pipe(gulp.dest(dest, { overwrite: true }));
     }
 }
@@ -213,7 +199,10 @@ function registerTaskByProcessors(taskName, taskDef) {
  * @param {BuildTaskTree | IBuildTaskDefinition} tasks 
  */
 function registerTask(taskName, tasks) {
-    if (isBuildTaskTree(tasks)) {
+    if (!tasks) {
+        gulp.registry().set(taskName, undefined);
+
+    } else if (isBuildTaskTree(tasks)) {
         // @ts-ignore
         registerTaskByBuildTaskTree(taskName, tasks);
 

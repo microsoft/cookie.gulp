@@ -4,15 +4,15 @@
 //-----------------------------------------------------------------------------
 "use strict";
 
-const VinylFile = require("vinyl");
 const { Transform } = require("stream");
 const fs = require("fs");
 const path = require("path");
 const tmp = require("tmp");
-const cp = require("child_process");
+const { exec } = require("child_process");
 
 const log = require("../../log");
 const utils = require("../../utilities");
+const { vinyl } = require("../../file-system");
 
 /**
  * 
@@ -21,7 +21,7 @@ const utils = require("../../utilities");
  */
 function heat(options) {
     options = options || Object.create(null);
-    options.intermediateDir = tmp.dirSync({ unsafeCleanup: true }).name;
+    options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;
 
     if (utils.isNullOrUndefined(options.componentGroupName)) {
         options.componentGroupName = "MainComponentsGroup";
@@ -51,12 +51,22 @@ function heat(options) {
             const cmdHeat = `"${exeHeat}" dir "${tempDir}" -srd -cg ${options.componentGroupName} -dr ${options.rootDirectory} ${argXslt} ${argKeepEmptyFolders} ${argDirectoryId} ${argAgComponentGuid} ${argAgGuidsNow} -o "${filesWixPath}"`;
 
             log.info("MSI", "Executing", cmdHeat);
-            log.info(cp.execSync(cmdHeat));
 
-            this.push(new VinylFile({ path: filesWixPath, contents: fs.createReadStream(filesWixPath, "utf8") }));
-            this.push(new VinylFile({ path: tempDir }));
+            exec(cmdHeat, { encoding: "utf8" },
+                (err, stdout, stderr) => {
+                    log.info(stdout);
 
-            callback();
+                    if (stderr) {
+                        log.error(stderr);
+                    }
+
+                    if (!err) {
+                        this.push(vinyl(filesWixPath));
+                        this.push(vinyl(tempDir));
+                    }
+
+                    callback(err);
+                });
         },
 
         /**
@@ -64,13 +74,17 @@ function heat(options) {
          * @param {import("vinyl")} chunk 
          */
         transform(chunk, encoding, callback) {
-            if (chunk.isDirectory()) {
-                fs.mkdirSync(path.join(tempDir, chunk.relative));
-            } else {
-                fs.copyFileSync(chunk.path, path.join(tempDir, chunk.relative));
-            }
+            try {
+                if (chunk.isDirectory()) {
+                    fs.mkdirSync(path.join(tempDir, chunk.relative));
+                } else {
+                    fs.copyFileSync(chunk.path, path.join(tempDir, chunk.relative));
+                }
 
-            callback();
+                callback();
+            } catch (err) {
+                callback(err);
+            }
         }
     });
 }
@@ -83,7 +97,7 @@ exports.heat = heat;
  */
 function candle(options) {
     options = options || Object.create(null);
-    options.intermediateDir = tmp.dirSync({ unsafeCleanup: true }).name;
+    options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;
 
     options.variables = options.variables || Object.create(null);
     options.arch = options.arch || "x86";
@@ -99,15 +113,29 @@ function candle(options) {
             const exeCandle = path.join(__dirname, "./wix/candle.exe");
             const argSourceFiles = sourceFiles.map((file) => `"${file.path}"`).join(" ");
             const argVariables = Object.keys(options.variables).map((varName) => `-d${varName}="${options.variables[varName]}"`).join(" ");
-            const cmdCandle = `"${exeCandle}" -arch ${options.arch} ${argVariables} -out "${wxsobjDir}" ${argSourceFiles}`;
+            const cmdCandle = `"${exeCandle}" -arch ${options.arch} ${argVariables} -out "${wxsobjDir}\\\\" ${argSourceFiles}`;
 
             log.info("MSI", "Executing", cmdCandle);
-            log.info(cp.execSync(cmdCandle));
 
-            fs.readdirSync(wxsobjDir, "utf8")
-                .forEach((fileName) => this.push(new VinylFile({ path: path.join(wxsobjDir, fileName) })));
+            exec(cmdCandle, { encoding: "utf8" },
+                (err, stdout, stderr) => {
+                    log.info(stdout);
 
-            callback();
+                    if (stderr) {
+                        log.error(stderr);
+                    }
+
+                    if (!err) {
+                        fs.readdirSync(wxsobjDir, "utf8")
+                            .forEach((fileName) => {
+                                const filePath = path.join(wxsobjDir, fileName);
+
+                                this.push(vinyl(filePath));
+                            });
+                    }
+
+                    callback(err);
+                });
         },
 
         /**
@@ -134,7 +162,7 @@ exports.candle = candle;
  */
 function light(options) {
     options = options || Object.create(null);
-    options.intermediateDir = tmp.dirSync({ unsafeCleanup: true }).name;
+    options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;
 
     options.spdb = options.spdb === true;
     options.outFileName = utils.string.isNullUndefinedOrWhitespaces(options.outFileName) ? "setup.msi" : options.outFileName;
@@ -157,12 +185,25 @@ function light(options) {
             const cmdLight = `"${exeLight}" -b ${packDir} ${argSpdb} -out ${argOut} ${argWxsObjs}`;
 
             log.info("MSI", "Executing", cmdLight);
-            log.info(cp.execSync(cmdLight));
+            exec(cmdLight, { encoding: "utf8" },
+                (err, stdout, stderr) => {
+                    log.info(stdout);
 
-            fs.readdirSync(outDir, "utf8")
-                .forEach((fileName) => this.push(new VinylFile({ path: path.join(outDir, fileName) })));
+                    if (stderr) {
+                        log.error(stderr);
+                    }
 
-            callback();
+                    if (!err) {
+                        fs.readdirSync(outDir, "utf8")
+                            .forEach((fileName) => {
+                                const filePath = path.join(outDir, fileName);
+
+                                this.push(vinyl(filePath));
+                            });
+                    }
+
+                    callback(err);
+                });
         },
 
         /**

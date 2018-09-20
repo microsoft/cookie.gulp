@@ -5,7 +5,6 @@
 "use strict";
 
 const { Transform, PassThrough } = require("stream");
-const VinylFile = require("vinyl");
 const tmp = require("tmp");
 const glob = require("fast-glob");
 const path = require("path");
@@ -13,6 +12,7 @@ const path = require("path");
 const log = require("../../log");
 const globUtils = require("../../glob-utils");
 const dd = require("../../dynamic-dependency");
+const { vinyl } = require("../../file-system");
 
 /** @type {string} */
 const InstallerDepName = "electron-installer-redhat";
@@ -84,12 +84,21 @@ function generateIconOptions(icons) {
 function constructProcessor(config, buildTarget, buildInfos, packageJson) {
     if (process.platform !== "linux") {
         log.warning(ModuleName, "Target", "Skipping: Publishing RPM must be on linux.");
-        return new PassThrough();
+        return new PassThrough({ objectMode: true });
     }
 
     if (buildTarget.platform !== "linux") {
         log.error(ModuleName, "Target", "Skipping: BuildTarget.platform must be linux.");
-        return new PassThrough();
+        return new PassThrough({ objectMode: true });
+    }
+
+    if (!dd.isModuleInstalled(InstallerDepName)) {
+        log.info(ModuleName, "Dependency", `Installing dependency "${InstallerDepName}" ...`);
+        dd.installDynamicDependency(
+            InstallerDepName,
+            {
+                depTypes: ["dev"]
+            });
     }
 
     return new Transform({
@@ -125,7 +134,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                     glob.sync("**/*", { cwd: options.dest })
                         .forEach(
                             /** @param {string} fileName */
-                            (fileName) => this.push(new VinylFile({ path: fileName, base: options.dest })));
+                            (fileName) => this.push(vinyl(fileName, options.dest)));
 
                     callback();
                 },
@@ -135,15 +144,3 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
     });
 };
 module.exports = constructProcessor;
-
-// Initialization
-(() => {
-    if (!dd.isModuleInstalled(InstallerDepName)) {
-        log.info(ModuleName, "Dependency", `Installing dependency "${InstallerDepName}" ...`);
-        dd.installDynamicDependency(
-            InstallerDepName,
-            {
-                depTypes: ["dev"]
-            });
-    }
-})();

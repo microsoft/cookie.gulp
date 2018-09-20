@@ -5,12 +5,12 @@
 "use strict";
 
 const { Transform, PassThrough } = require("stream");
-const VinylFile = require("vinyl");
 const tmp = require("tmp");
 const path = require("path");
 
 const log = require("../../log");
 const dd = require("../../dynamic-dependency");
+const { vinyl } = require("../../file-system");
 
 /** @type {string} */
 const InstallerDepName = "electron-installer-zip";
@@ -29,12 +29,21 @@ const ModuleName = "ZIP";
 function constructProcessor(config, buildTarget, buildInfos, packageJson) {
     if (process.platform !== "darwin") {
         log.warning(ModuleName, "Target", "Skipping: Publishing ZIP must be on darwin.");
-        return new PassThrough();
+        return new PassThrough({ objectMode: true });
     }
 
     if (buildTarget.platform !== "darwin") {
         log.error(ModuleName, "Target", "Skipping: BuildTarget.platform must be darwin.");
-        return new PassThrough();
+        return new PassThrough({ objectMode: true });
+    }
+
+    if (!dd.isModuleInstalled(InstallerDepName)) {
+        log.info(ModuleName, "Dependency", `Installing dependency "${InstallerDepName}" ...`);
+        dd.installDynamicDependency(
+            InstallerDepName,
+            {
+                depTypes: ["dev"]
+            });
     }
 
     return new Transform({
@@ -66,22 +75,10 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                         return;
                     }
 
-                    this.push(new VinylFile({ path: outfile }));
+                    this.push(vinyl(outfile));
                     callback();
                 });
         }
     });
 };
 module.exports = constructProcessor;
-
-// Initialization
-(() => {
-    if (!dd.isModuleInstalled(InstallerDepName)) {
-        log.info(ModuleName, "Dependency", `Installing dependency "${InstallerDepName}" ...`);
-        dd.installDynamicDependency(
-            InstallerDepName,
-            {
-                depTypes: ["dev"]
-            });
-    }
-})();

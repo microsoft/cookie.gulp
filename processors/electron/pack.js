@@ -8,11 +8,11 @@ const { Transform } = require("stream");
 const fs = require("fs");
 const path = require("path");
 const tmp = require("tmp");
-const VinylFile = require("vinyl");
 const packager = require("electron-packager");
 const glob = require("fast-glob");
 
 const globUtils = require("../../glob-utils");
+const { vinyl } = require("../../file-system");
 
 /**
  * Convert NodeJS.Architecture to packager specific architecture.
@@ -74,18 +74,6 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
             config = config || Object.create(null);
             config.macOS = config.macOS || Object.create(null);
 
-            /** @type {string} */
-            let iconDir = undefined;
-
-            if (config.icons) {
-                iconDir = tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name;
-
-                glob.sync(globUtils.toGlobs(config.icons), { dot: true })
-                    .forEach(
-                        /** @param {string} iconPath */
-                        (iconPath) => fs.copyFileSync(iconPath, path.join(iconDir, path.basename(iconPath))));
-            }
-
             const options = {
                 overwrite: true,
                 platform: toPackagerPlatform(buildTarget.platform),
@@ -96,7 +84,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
                 // Configurable
                 asar: config.asar,
-                icon: iconDir,
+                icon: config.icon,
                 appCopyright: buildInfos.copyright,
                 appVersion: buildInfos.buildNumber,
                 executableName: buildInfos.executableName,
@@ -121,9 +109,12 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 /** @param {Array.<string>} packagePaths */
                 (packagePaths) => {
                     for (const packagePath of packagePaths) {
-                        this.push(new VinylFile({ path: path.resolve(packagePath) }));
+                        glob.sync(path.join(packagePath, "**", "*"), { dot: true, stats: false })
+                            .forEach(
+                                /** @param {string} filePath */
+                                (filePath) => this.push(vinyl(filePath,packagePath)));
                     }
-                    
+
                     callback();
                 },
                 (reason) => callback(reason));
@@ -131,7 +122,12 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
         /** @param {import("vinyl")} chunk */
         transform(chunk, encoding, callback) {
-            fs.copyFileSync(chunk.path, path.join(tempDir, chunk.relative));
+            if (chunk.isDirectory()) {
+                fs.mkdirSync(path.join(tempDir, chunk.relative));
+            } else {
+                fs.copyFileSync(chunk.path, path.join(tempDir, chunk.relative));
+            }
+
             callback();
         }
     });

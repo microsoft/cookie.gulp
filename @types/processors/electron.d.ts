@@ -11,7 +11,7 @@ declare interface IElectronLinuxInstallerProcessorConfig {
 
 declare interface IElectronPackageProcessorConfig {
     asar?: boolean;
-    icons?: GlobLike;
+    icon?: string;
     macOS?: {
         appBundleId: string;
         appCategoryType: string;

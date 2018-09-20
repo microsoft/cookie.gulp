@@ -32,6 +32,24 @@ function generateMsiVersion(buildInfos) {
 
 /**
  * 
+ * @param {NodeJS.Architecture} arch 
+ * @returns {"x86"|"x64"}
+ */
+function toMsiArch(arch) {
+    switch (arch) {
+        case "x32":
+            return "x86";
+
+        case "x64":
+            return "x64";
+
+        default:
+            throw new Error(`Unsupported architecture: ${arch}`);
+    }
+}
+
+/**
+ * 
  * @param {IMsiProcessorConfig} config 
  * @param {IBuildTaget} buildTarget 
  * @param {IBuildInfos} buildInfos 
@@ -41,14 +59,14 @@ function generateMsiVersion(buildInfos) {
 function msi(config, buildTarget, buildInfos, packageJson) {
     if (process.platform !== "win32") {
         log.warning("MSI", "Target", "Skipping: Publishing MSI must be on win32.");
-        return new PassThrough();
+        return new PassThrough({ objectMode: true });
     }
-    
+
     if (buildTarget.platform !== "win32") {
         log.error("MSI", "Target", "Skipping: BuildTarget.platform must be win32.");
-        return new PassThrough();
+        return new PassThrough({ objectMode: true });
     }
-    
+
     if (buildTarget.arch !== "x32"
         && buildTarget.arch !== "x64") {
         log.error("MSI", "Target", "Skpping: BuildTarget.arch must be x32 or x64.");
@@ -73,11 +91,11 @@ function msi(config, buildTarget, buildInfos, packageJson) {
         }),
 
         gulp.src(config.wxs ? globUtils.toGlobs(config.wxs, "wxs") : "**/*.wxs", { dot: true }),
-
+        
         // @ts-ignore
         wix.candle({
             intermediateDir: buildInfos.paths.intermediateDir,
-            arch: buildTarget.arch,
+            arch: toMsiArch(buildTarget.arch),
             variables: config.variables
         }),
 

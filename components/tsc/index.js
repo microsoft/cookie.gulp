@@ -6,9 +6,9 @@
 
 const { Transform } = require("stream");
 const path = require("path");
-const fs = require("fs");
 const ts = require("typescript");
-const Vinyl = require("vinyl");
+
+const { vinyl } = require("../../file-system");
 
 /**
  * 
@@ -62,7 +62,7 @@ exports.compile = function (options) {
 
     return new Transform({
         objectMode: true,
-        
+
         flush(callback) {
             // this is a tsc internal switch.
             // https://github.com/Microsoft/TypeScript/blob/194c2bc2ca806f5f1014113329e33207f683037c/src/compiler/emitter.ts#L81
@@ -99,11 +99,7 @@ exports.compile = function (options) {
 
                         this.push(files[emittedFileId]);
                     } else {
-                        this.push(new Vinyl({
-                            base: options.outDir,
-                            path: emittedFilePath,
-                            contents: fs.createReadStream(emittedFilePath)
-                        }));
+                        this.push(vinyl(emittedFilePath, options.outDir));
                     }
                 });
             }

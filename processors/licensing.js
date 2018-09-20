@@ -5,12 +5,12 @@
 "use strict";
 
 const { Transform } = require("stream");
-const VinylFile = require("vinyl");
 const fs = require("fs");
 const path = require("path");
 const glob = require("fast-glob");
 
 const utils = require("../utilities");
+const { vinyl } = require("../file-system");
 
 /**
  * @typedef IDepLicenseInfo
@@ -75,11 +75,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 }
             }
 
-            this.push(new VinylFile({
-                base: buildInfos.paths.intermediateDir,
-                path: noticeFileName,
-                contents: fs.createReadStream(noticeFileName)
-            }));
+            this.push(vinyl(noticeFileName, buildInfos.paths.intermediateDir));
 
             callback();
         },

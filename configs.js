@@ -6,7 +6,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const fs = require("fs");
+const path = require("path");
 
+const fsUtils = require("./file-system");
 const log = require("./log");
 const utils = require("./utilities");
 
@@ -53,7 +55,7 @@ function generateBuildInfos() {
     buildInfos.productName = buildInfos.productName || exports.packageJson.name;
     buildInfos.executableName = buildInfos.executableName || exports.packageJson.name;
     buildInfos.description = buildInfos.description || exports.packageJson.description;
-    buildInfos.copyright = buildInfos.copyright || `Copyright (c) ${exports.packageJson.author}.`;
+    buildInfos.copyright = buildInfos.copyright || `Copyright (c) ${new Date().getFullYear()} ${exports.packageJson.author}.`;
     buildInfos.ignores = buildInfos.ignores || [];
 
     /**
@@ -67,6 +69,7 @@ function generateBuildInfos() {
 
         log.info("Config", "BuildInfos", "buildInfos:buildNumber", "=", buildInfos.buildNumber);
     }
+
     /**
      * paths
      */
@@ -74,36 +77,41 @@ function generateBuildInfos() {
         buildInfos.paths = Object.create(null);
     }
 
-    if (!buildInfos.targets) {
-        buildInfos.targets = Object.create(null);
-    }
-
     // buildDir
     if (utils.isNullOrUndefined(buildInfos.paths.buildDir)) {
-        buildInfos.paths.buildDir = "/build/out";
+        buildInfos.paths.buildDir = "./build/out";
     }
 
     if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.buildDir)) {
         throw new Error(`${buildInfosJsonPath}:paths.buildDir must be specified.`);
     }
 
+    buildInfos.paths.buildDir = path.resolve(buildInfos.paths.buildDir);
+    fsUtils.createDirectory(buildInfos.paths.buildDir);
+
     // publishDir
     if (utils.isNullOrUndefined(buildInfos.paths.publishDir)) {
-        buildInfos.paths.publishDir = "/publish";
+        buildInfos.paths.publishDir = "./publish";
     }
 
     if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.publishDir)) {
         throw new Error(`${buildInfosJsonPath}:paths.publishDir must be specified.`);
     }
 
+    buildInfos.paths.publishDir = path.resolve(buildInfos.paths.publishDir);
+    fsUtils.createDirectory(buildInfos.paths.publishDir);
+
     // intermediateDir
     if (utils.isNullOrUndefined(buildInfos.paths.intermediateDir)) {
-        buildInfos.paths.intermediateDir = "/build/tmp";
+        buildInfos.paths.intermediateDir = "./build/tmp";
     }
 
     if (utils.string.isNullUndefinedOrWhitespaces(buildInfos.paths.intermediateDir)) {
         throw new Error(`${buildInfosJsonPath}:paths.intermediateDir must be specified.`);
     }
+
+    buildInfos.paths.intermediateDir = path.resolve(buildInfos.paths.intermediateDir);
+    fsUtils.createDirectory(buildInfos.paths.intermediateDir);
 
     /**
      * configs
@@ -118,6 +126,7 @@ function generateBuildInfos() {
     if (!buildInfos.targets) {
         buildInfos.targets = [];
     }
+
     /**
      * tasks
      */
@@ -125,7 +134,7 @@ function generateBuildInfos() {
         buildInfos.tasks = Object.create(null);
     }
 
-    log.info("Config", "BuildInfos", "Generating runtime buildinfos.");
+    log.info("Config", "BuildInfos", "Runtime buildinfos is generated.");
 
     return buildInfos;
 }

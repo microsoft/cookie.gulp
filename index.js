@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 
 const gulp = require("gulp");
 const fs = require("fs");
@@ -34,7 +33,7 @@ function executeGulp(taskName, cwd) {
 function executeSubTasks(taskName) {
     /** @type {Array.<import("undertaker").TaskFunction>} */
     const taskFuncs = [];
-    
+
     for (const gulpfile of glob.sync("**/gulpfile.js", { dot: true })) {
         // @ts-ignore
         taskFuncs.push(executeGulp.bind(null, taskName, path.dirname(gulpfile)));
@@ -66,7 +65,7 @@ function isBuildTaskDef(value) {
 
 /**
  * 
- * @param {import("./configs").BuildTaskTree} taskTree
+ * @param {BuildTaskTree} taskTree
  * @returns {import("undertaker").TaskFunction}
  */
 function generateTaskByBuildTaskTree(taskTree) {
@@ -86,7 +85,7 @@ function generateTaskByBuildTaskTree(taskTree) {
 /**
  * 
  * @param {string} taskName 
- * @param {import("./configs").BuildTaskTree} tasks 
+ * @param {BuildTaskTree} tasks 
  */
 function registerTaskByBuildTaskTree(taskName, tasks) {
     const task = generateTaskByBuildTaskTree(tasks);
@@ -102,8 +101,8 @@ function registerTaskByBuildTaskTree(taskName, tasks) {
 
 /**
  * 
- * @param {import("./configs").IBuildTaskDefinition} taskDef 
- * @param {import("./configs").IBuildTaget} targetConfig 
+ * @param {IBuildTaskDefinition} taskDef 
+ * @param {IBuildTaget} targetConfig 
  * @returns {import("undertaker").TaskFunction}
  */
 function generateTaskByProcessors(taskDef, targetConfig) {
@@ -149,7 +148,7 @@ function generateTaskByProcessors(taskDef, targetConfig) {
 /**
  * 
  * @param {string} taskName 
- * @param {import("./configs").IBuildTaskDefinition} taskDef 
+ * @param {IBuildTaskDefinition} taskDef 
  */
 function registerTaskByProcessors(taskName, taskDef) {
     if (configs.buildInfos.targets.length <= 0) {
@@ -193,7 +192,7 @@ function registerTaskByProcessors(taskName, taskDef) {
 /**
  * 
  * @param {string} taskName 
- * @param {import("./configs").BuildTaskTree | import("./configs").IBuildTaskDefinition} tasks 
+ * @param {BuildTaskTree | IBuildTaskDefinition} tasks 
  */
 function registerTask(taskName, tasks) {
     if (isBuildTaskTree(tasks)) {
@@ -228,7 +227,7 @@ function importTasks(tasksPath = "./tasks") {
         const stat = fs.statSync(tasksPath);
 
         if (stat.isDirectory()) {
-        
+
             if (fs.existsSync(path.join(tasksPath, "package.json"))
                 || fs.existsSync(path.join(tasksPath, "index.js"))) {
                 require(tasksPath);
@@ -248,11 +247,24 @@ function importTasks(tasksPath = "./tasks") {
     }
 }
 
-// Import pre-defined tasks.
-importTasks();
+/**
+ * 
+ * @param {import("undertaker-registry")} registry 
+ */
+function initialize(registry) {
+    if (!registry) {
+        throw new Error("registry must be provided (undertaker-registry).");
+    }
 
-// Install dynamic dependencies.
-installDynamicDependencies();
+    gulp.registry(registry);
 
-// Configure tasks.
-configureTasks();
+    // Import pre-defined tasks.
+    importTasks();
+
+    // Install dynamic dependencies.
+    installDynamicDependencies();
+
+    // Configure tasks.
+    configureTasks();
+}
+module.exports = initialize;

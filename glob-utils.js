@@ -65,7 +65,7 @@ function toGlob(globlike, exts) {
         glob = configs.buildInfos.paths[regexResult[1]];
 
     } else if (regexResult = Regex.GlobLike.exec(globlike)) {
-        finalizedGlobs.push(glob);
+        finalizedGlobs.push(globlike);
         return finalizedGlobs;
 
     } else {

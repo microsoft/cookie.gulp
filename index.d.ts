@@ -3,4 +3,6 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-export {};
+declare function initialize(registry: import("undertaker-registry")): void;
+
+export = initialize;

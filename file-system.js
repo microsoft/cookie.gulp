@@ -9,11 +9,46 @@ const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
 
+const utils = require("./utilities");
+
 exports.rmdirAsync = promisify(fs.rmdir);
 exports.readDirAsync = promisify(fs.readdir);
 exports.statAsync = promisify(fs.stat);
 exports.unlinkAsync = promisify(fs.unlink);
 exports.existsAsync = promisify(fs.exists);
+
+/**
+ * @param {string} dir
+ */
+function createDirectory(dir) {
+    if (utils.string.isNullUndefinedOrWhitespaces(dir)) {
+        throw new Error("dir must be provided (not null/undefined/whitespaces).");
+    }
+
+    const parts = dir.split("/");
+    let currentDir = "";
+
+    for (const part of parts) {
+        currentDir = path.join(currentDir, part);
+
+        let stat;
+
+        try {
+            stat = fs.statSync(currentDir);
+        } catch (err) {
+            if (!err || (err && err.code !== "ENOENT")) {
+                throw err;
+            }
+
+            stat = null;
+        }
+
+        if (!stat || !stat.isDirectory()) {
+            fs.mkdirSync(currentDir);
+        }
+    }
+}
+exports.createDirectory = createDirectory;
 
 /**
  * 
@@ -23,6 +58,7 @@ exports.existsAsync = promisify(fs.exists);
 function deleteAsync(targetPath) {
     return exports.statAsync(targetPath)
         .then(
+            // @ts-ignore
             (stat) => {
                 if (stat.isFile || stat.isSymbolicLink) {
                     return exports.unlinkAsync(targetPath);
@@ -35,6 +71,8 @@ function deleteAsync(targetPath) {
                     return Promise.reject(`Not supported targetPath: ${targetPath}`);
                 }
             },
+
+            /** @param {*} reason */
             (reason) => {
                 if (reason && reason.code && reason.code === "ENOENT") {
                     return Promise.resolve();

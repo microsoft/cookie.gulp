@@ -3,18 +3,20 @@
 // Licensed under the MIT License. See License file under the project root for license information.
 //-----------------------------------------------------------------------------
 
-/// <reference types="node" />
+export declare function rmdirAsync(path: PathLike): Promise<void>;
 
-import * as fs from "fs";
+export declare function readDirAsync(path: PathLike, options?: { encoding: BufferEncoding | null } | BufferEncoding | null): Promise<string[]>;
 
-export declare const rmdirAsync: typeof fs.rmdir.__promisify__;
+export declare function readDirAsync(path: PathLike, options: "buffer" | { encoding: "buffer" }): Promise<Buffer[]>;
 
-export declare const readDirAsync: typeof fs.readdir.__promisify__;
+export declare function readDirAsync(path: PathLike, options?: { encoding?: string | null } | string | null): Promise<string[] | Buffer[]>;
 
-export declare const statAsync: typeof fs.stat.__promisify__;
+export declare function statAsync(path: PathLike): Promise<Stats>;
 
-export declare const unlinkAsync: typeof fs.unlink.__promisify__;
+export declare function unlinkAsync(path: PathLike): Promise<void>;
 
-export declare const existsAsync: typeof fs.exists.__promisify__;
+export declare function existsAsync(path: PathLike): Promise<boolean>;
 
 export declare function deleteAsync(targetPath: string): Promise<void>;
+
+export declare function createDirectory(dir: string): void;

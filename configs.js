@@ -7,7 +7,6 @@
 const fs = require("fs");
 const path = require("path");
 
-const globUtils = require("./glob-utils");
 const log = require("./log");
 const utils = require("./utilities");
 

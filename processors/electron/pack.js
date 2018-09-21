@@ -11,7 +11,6 @@ const tmp = require("tmp");
 const packager = require("electron-packager");
 const glob = require("fast-glob");
 
-const globUtils = require("../../glob-utils");
 const { vinyl } = require("../../file-system");
 
 /**

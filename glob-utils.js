@@ -10,10 +10,10 @@ const configs = require("./configs");
 
 const Regex = {
     /** @type {RegExp} */
-    PathRef: /\<([^\<\>]+)\>/ig,
+    PathRef: /\<([^\<\>]+)\>/i,
 
     /** @type {RegExp} */
-    GlobLike: /[\^\*\!\+\?\@\|]+/ig
+    GlobLike: /[\^\*\!\+\?\@\|]+/i
 };
 exports.Regex = Regex;
 

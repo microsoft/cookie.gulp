@@ -10,11 +10,6 @@ declare interface IBuildPaths {
     buildDir?: string;
 }
 
-declare interface IBuildTargetConfig {
-    platform: NodeJS.Platform;
-    archs: Array<NodeJS.Architecture>;
-}
-
 declare interface IBuildTaget {
     platform: NodeJS.Platform;
     arch?: NodeJS.Architecture;
@@ -32,6 +27,7 @@ declare interface IBuildTaskDefinition {
     sources?: GlobLike;
     dest?: string;
     "ignore-target"?: boolean;
+    targets?: Array<string>;
     processors: Array<string | IProcessorConfig>;
 }
 
@@ -79,7 +75,7 @@ declare interface IBuildInfos {
         processors?: IBuildProcessorConfigDictionary;
     };
 
-    targets?: Array<IBuildTargetConfig>;
+    targets?: Array<string>;
     paths?: IBuildPaths;
     ignores?: Array<string>;
 }

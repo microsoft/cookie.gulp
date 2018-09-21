@@ -139,7 +139,7 @@ function generateTaskByProcessors(taskDef, targetConfig) {
         let dest = taskDef.dest || configs.buildInfos.paths.buildDir;
 
         dest = dest.replace(globUtils.Regex.PathRef, (match, pathName) => configs.buildInfos.paths[pathName]);
-        
+
         return lastProcessor.pipe(gulp.dest(dest, { overwrite: true }));
     }
 }
@@ -160,37 +160,47 @@ function registerTaskByProcessors(taskName, taskDef) {
     /** @type {Array.<string>} */
     const subTasks = [];
 
-    for (const targetConfig of configs.buildInfos.targets) {
-        if (targetConfig.platform !== process.platform) {
+    /** @type {RegExp} */
+    const targetRegex = /^([A-Za-z0-9\-\_]+)(\@([A-Za-z0-9\-\_]+))?$/i;
+
+    for (const target of configs.buildInfos.targets) {
+        const targetMatchResult = targetRegex.exec(target);
+
+        if (!targetMatchResult) {
+            throw new Error(`Build target is not valid: ${target}`);
+        }
+
+        /** @type {IBuildTaget} */
+        const buildTarget = {
+            // @ts-ignore
+            platform: targetMatchResult[1],
+
+            // @ts-ignore
+            arch: targetMatchResult[3]
+        };
+
+        if (buildTarget.platform !== process.platform) {
             continue;
         }
 
-        const subTaskName = `${taskName}:${targetConfig.platform}`;
+        if (taskDef.targets
+            && !taskDef.targets.find((targetItem) => targetItem === buildTarget.platform || targetItem === target)) {
+            continue;
+        }
+
+        const subTaskName = `${taskName}:${buildTarget.platform}${buildTarget.arch ? "@" + buildTarget.arch : ""}`;
 
         subTasks.push(subTaskName);
-
-        if (!targetConfig.archs || targetConfig.archs.length <= 0) {
-            gulp.task(subTaskName, generateTaskByProcessors(taskDef, { platform: targetConfig.platform }));
-
-        } else {
-            /** @type {Array.<string>} */
-            const childTasks = [];
-
-            for (const arch of targetConfig.archs) {
-                const childTaskName = `${subTaskName}@${arch}`;
-
-                childTasks.push(childTaskName);
-
-                gulp.task(
-                    childTaskName,
-                    generateTaskByProcessors(taskDef, { platform: targetConfig.platform, arch: arch }));
-            }
-
-            gulp.task(subTaskName, gulp.series(childTasks));
-        }
+        gulp.task(subTaskName, generateTaskByProcessors(taskDef, buildTarget));
     }
 
-    gulp.task(taskName, gulp.series(subTasks));
+    gulp.task(taskName,
+        subTasks.length > 0
+            ? gulp.series(subTasks)
+            : () => {
+                console.log("Skipping", "Task", `Task "${taskName}" has no matched targets.`);
+                return Promise.resolve();
+            });
 }
 
 /**

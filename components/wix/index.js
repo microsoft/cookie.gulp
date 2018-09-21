@@ -10,7 +10,6 @@ const path = require("path");
 const tmp = require("tmp");
 const { exec } = require("child_process");
 
-const log = require("../../log");
 const utils = require("../../utilities");
 const { vinyl } = require("../../file-system");
 
@@ -50,14 +49,14 @@ function heat(options) {
             const argAgGuidsNow = options.generateGuidsNow ? "-gg" : "";
             const cmdHeat = `"${exeHeat}" dir "${tempDir}" -srd -cg ${options.componentGroupName} -dr ${options.rootDirectory} ${argXslt} ${argKeepEmptyFolders} ${argDirectoryId} ${argAgComponentGuid} ${argAgGuidsNow} -o "${filesWixPath}"`;
 
-            log.info("MSI", "Executing", cmdHeat);
+            console.info("MSI", "Executing", cmdHeat);
 
             exec(cmdHeat, { encoding: "utf8" },
                 (err, stdout, stderr) => {
-                    log.info(stdout);
+                    console.info(stdout);
 
                     if (stderr) {
-                        log.error(stderr);
+                        console.error(stderr);
                     }
 
                     if (!err) {
@@ -115,14 +114,14 @@ function candle(options) {
             const argVariables = Object.keys(options.variables).map((varName) => `-d${varName}="${options.variables[varName]}"`).join(" ");
             const cmdCandle = `"${exeCandle}" -arch ${options.arch} ${argVariables} -out "${wxsobjDir}\\\\" ${argSourceFiles}`;
 
-            log.info("MSI", "Executing", cmdCandle);
+            console.info("MSI", "Executing", cmdCandle);
 
             exec(cmdCandle, { encoding: "utf8" },
                 (err, stdout, stderr) => {
-                    log.info(stdout);
+                    console.info(stdout);
 
                     if (stderr) {
-                        log.error(stderr);
+                        console.error(stderr);
                     }
 
                     if (!err) {
@@ -184,13 +183,13 @@ function light(options) {
             const argWxsObjs = wxsObjs.map((fileName) => `"${fileName}"`).join(" ");
             const cmdLight = `"${exeLight}" -b ${packDir} ${argSpdb} -out ${argOut} ${argWxsObjs}`;
 
-            log.info("MSI", "Executing", cmdLight);
+            console.info("MSI", "Executing", cmdLight);
             exec(cmdLight, { encoding: "utf8" },
                 (err, stdout, stderr) => {
-                    log.info(stdout);
+                    console.info(stdout);
 
                     if (stderr) {
-                        log.error(stderr);
+                        console.error(stderr);
                     }
 
                     if (!err) {

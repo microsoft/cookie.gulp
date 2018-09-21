@@ -129,7 +129,7 @@ function candle(options) {
                             .forEach((fileName) => {
                                 const filePath = path.join(wxsobjDir, fileName);
 
-                                this.push(vinyl(filePath));
+                                this.push(vinyl(filePath, wxsobjDir));
                             });
                     }
 
@@ -197,7 +197,7 @@ function light(options) {
                             .forEach((fileName) => {
                                 const filePath = path.join(outDir, fileName);
 
-                                this.push(vinyl(filePath));
+                                this.push(vinyl(filePath, outDir));
                             });
                     }
 

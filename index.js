@@ -264,11 +264,22 @@ function importTasks(tasksPath = path.join(__dirname, "./tasks")) {
     }
 }
 
-// Import pre-defined tasks.
-importTasks();
+/**
+ * 
+ * @param {import("undertaker-registry")} registry 
+ */
+function init(registry) {
+    if (registry) {
+        gulp.registry(registry);
+    }
 
-// Install dynamic dependencies.
-installDynamicDependencies();
+    // Import pre-defined tasks.
+    importTasks();
 
-// Configure tasks.
-configureTasks();
+    // Install dynamic dependencies.
+    installDynamicDependencies();
+
+    // Configure tasks.
+    configureTasks();
+}
+module.exports = init;

@@ -24,7 +24,7 @@ module.exports = () => {
                             ? "LINK"
                             : "FILE";
 
-                console.log(category, chunk.path);
+                console.log(category, chunk.base, chunk.relative);
             } else {
                 console.log(chunk);
             }

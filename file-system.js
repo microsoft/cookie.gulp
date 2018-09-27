@@ -14,6 +14,7 @@ const utils = require("./utilities");
 exports.rmdirAsync = promisify(fs.rmdir);
 exports.readDirAsync = promisify(fs.readdir);
 exports.statAsync = promisify(fs.stat);
+exports.lstatAsync = promisify(fs.lstat);
 exports.unlinkAsync = promisify(fs.unlink);
 exports.existsAsync = promisify(fs.exists);
 
@@ -58,7 +59,7 @@ exports.createDirectory = createDirectory;
  * @returns {Promise<void>}
  */
 function deleteAsync(targetPath) {
-    return exports.statAsync(targetPath)
+    return exports.lstatAsync(targetPath)
         .then(
             // @ts-ignore
             (stat) => {

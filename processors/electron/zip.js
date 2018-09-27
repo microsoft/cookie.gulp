@@ -7,6 +7,7 @@
 const { Transform, PassThrough } = require("stream");
 const tmp = require("tmp");
 const path = require("path");
+const glob = require("fast-glob");
 
 const log = require("../../log");
 const dd = require("../../dynamic-dependency");
@@ -59,7 +60,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             const options = {
                 dir: path.join(chunk.path, `${buildInfos.productName}.app`),
-                out: tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name
+                out: path.join(buildInfos.paths.intermediateDir, `${buildInfos.executableName}-${buildTarget.platform}-${buildTarget.arch}.zip`)
             };
 
             const installer = require(InstallerDepName);
@@ -67,15 +68,14 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
             installer(options,
                 /**
                  * @param {*} err
-                 * @param {string} outfile
-                  */
-                (err, outfile) => {
+                 */
+                (err) => {
                     if (err) {
                         callback(err);
                         return;
                     }
 
-                    this.push(vinyl(outfile));
+                    this.push(vinyl(options.out, buildInfos.paths.intermediateDir));
                     callback();
                 });
         }

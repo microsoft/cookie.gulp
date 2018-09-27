@@ -13,6 +13,8 @@ export declare function readDirAsync(path: PathLike, options?: { encoding?: stri
 
 export declare function statAsync(path: PathLike): Promise<Stats>;
 
+export declare function lstatAsync(path: PathLike): Promise<Stats>;
+
 export declare function unlinkAsync(path: PathLike): Promise<void>;
 
 export declare function existsAsync(path: PathLike): Promise<boolean>;

@@ -200,7 +200,7 @@ function registerTaskByProcessors(taskName, taskDef) {
         subTasks.length > 0
             ? gulp.series(subTasks)
             : () => {
-                console.log("Skipping", "Task", `Task "${taskName}" has no matched targets.`);
+                console.log("TASK", "Target", `Skipping: Task "${taskName}" has no matched targets.`);
                 return Promise.resolve();
             });
 }

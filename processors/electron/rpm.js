@@ -124,7 +124,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 productName: buildInfos.productName,
                 genericName: buildInfos.productName,
                 version: buildInfos.buildNumber,
-                revision: 1,
+                revision: "0",
                 section: config.section,
                 bin: buildInfos.executableName,
                 icon: generateIconOptions(config.icons),

@@ -62,10 +62,14 @@ function generateIconOptions(icons) {
             iconObj["scalable"] = iconFileName;
 
         } else if (path.extname(iconFileName) === ".png") {
-            const size = iconFileName.match(/(\d+)/g)[0];
+            const match = iconFileName.match(/(\d+)/g);
 
-            if (size) {
-                iconObj[`${size}x${size}`] = iconFileName;
+            if (match) {
+                const size = match[0];
+
+                if (size) {
+                    iconObj[`${size}x${size}`] = iconFileName;
+                }
             }
         }
     }
@@ -131,7 +135,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             installer(options).then(
                 () => {
-                    glob.sync("**/*", { cwd: options.dest })
+                    glob.sync("**/*", { absolute: true })
                         .forEach(
                             /** @param {string} fileName */
                             (fileName) => this.push(vinyl(fileName, options.dest)));

@@ -229,7 +229,7 @@ exports.object = {
  */
 String.prototype.format = function (...args) {
     // @ts-ignore
-    return exports.string.format(this, args);
+    return exports.string.format(this, ...args);
 };
 
 /**

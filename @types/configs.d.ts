@@ -25,6 +25,7 @@ declare interface IProcessorConfig extends IDictionary<any> {
 
 declare interface IBuildTaskDefinition {
     sources?: GlobLike;
+    base?: string;
     dest?: string;
     "ignore-target"?: boolean;
     targets?: Array<string>;

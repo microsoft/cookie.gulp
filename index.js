@@ -109,8 +109,11 @@ function generateTaskByProcessors(taskDef, targetConfig) {
         /** @type {NodeJS.ReadWriteStream} */
         let lastProcessor;
 
+        const base = (taskDef.base || path.resolve("."))
+            .replace(globUtils.Regex.PathRef, (match, pathName) => configs.buildInfos.paths[pathName]);
+
         lastProcessor =
-            gulp.src(taskDef.sources ? globUtils.toGlobs(taskDef.sources) : globUtils.normalizeGlobs("**/*"), { dot: true });
+            gulp.src(taskDef.sources ? globUtils.toGlobs(taskDef.sources) : globUtils.normalizeGlobs("**/*"), { dot: true, base: base });
 
         for (const processorRef of taskDef.processors) {
             /** @type {string} */
@@ -136,9 +139,8 @@ function generateTaskByProcessors(taskDef, targetConfig) {
                 lastProcessor.pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
         }
 
-        let dest = taskDef.dest || configs.buildInfos.paths.buildDir;
-
-        dest = dest.replace(globUtils.Regex.PathRef, (match, pathName) => configs.buildInfos.paths[pathName]);
+        const dest = (taskDef.dest || configs.buildInfos.paths.buildDir)
+            .replace(globUtils.Regex.PathRef, (match, pathName) => configs.buildInfos.paths[pathName]);
 
         return lastProcessor.pipe(gulp.dest(dest, { overwrite: true }));
     }

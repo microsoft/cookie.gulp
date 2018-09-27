@@ -12,6 +12,7 @@ declare interface IElectronLinuxInstallerProcessorConfig {
 declare interface IElectronPackageProcessorConfig {
     asar?: boolean;
     icon?: string;
+    output?: "files" | "dir";
     macOS?: {
         appBundleId: string;
         appCategoryType: string;

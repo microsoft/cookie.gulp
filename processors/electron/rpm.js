@@ -62,10 +62,14 @@ function generateIconOptions(icons) {
             iconObj["scalable"] = iconFileName;
 
         } else if (path.extname(iconFileName) === ".png") {
-            const size = iconFileName.match(/(\d+)/g)[0];
+            const match = iconFileName.match(/(\d+)/g);
 
-            if (size) {
-                iconObj[`${size}x${size}`] = iconFileName;
+            if (match) {
+                const size = match[0];
+
+                if (size) {
+                    iconObj[`${size}x${size}`] = iconFileName;
+                }
             }
         }
     }
@@ -120,7 +124,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 productName: buildInfos.productName,
                 genericName: buildInfos.productName,
                 version: buildInfos.buildNumber,
-                revision: 0,
+                revision: 1,
                 section: config.section,
                 bin: buildInfos.executableName,
                 icon: generateIconOptions(config.icons),
@@ -129,17 +133,21 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             const installer = require(InstallerDepName);
 
-            installer(options).then(
-                () => {
-                    glob.sync("**/*", { cwd: options.dest })
+            installer(options,
+                /** @param {*} err */
+                (err) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+
+                    glob.sync(path.join(options.dest, "**/*"), { dot: true })
                         .forEach(
                             /** @param {string} fileName */
                             (fileName) => this.push(vinyl(fileName, options.dest)));
 
                     callback();
-                },
-                /** @param {*} reason */
-                (reason) => callback(reason));
+                });
         }
     });
 };

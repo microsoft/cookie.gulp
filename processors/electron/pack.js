@@ -108,10 +108,15 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 /** @param {Array.<string>} packagePaths */
                 (packagePaths) => {
                     for (const packagePath of packagePaths) {
-                        glob.sync(path.join(packagePath, "**", "*"), { dot: true, stats: false })
-                            .forEach(
-                                /** @param {string} filePath */
-                                (filePath) => this.push(vinyl(filePath,packagePath)));
+                        if (config.output === "files") {
+                            glob.sync(path.join(packagePath, "**", "*"), { dot: true, stats: false })
+                                .forEach(
+                                    /** @param {string} filePath */
+                                    (filePath) => this.push(vinyl(filePath, packagePath)));
+
+                        } else {
+                            this.push(vinyl(packagePath));
+                        }
                     }
 
                     callback();

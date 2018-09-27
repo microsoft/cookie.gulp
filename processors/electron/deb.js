@@ -135,7 +135,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             installer(options).then(
                 () => {
-                    glob.sync("**/*", { absolute: true })
+                    glob.sync(path.join(options.dest, "**/*"), { dot: true })
                         .forEach(
                             /** @param {string} fileName */
                             (fileName) => this.push(vinyl(fileName, options.dest)));

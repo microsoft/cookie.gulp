@@ -5,9 +5,7 @@
 "use strict";
 
 const { Transform, PassThrough } = require("stream");
-const tmp = require("tmp");
 const path = require("path");
-const glob = require("fast-glob");
 
 const log = require("cookie.gulp/log");
 const dd = require("cookie.gulp/dynamic-dependency");

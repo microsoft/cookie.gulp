@@ -13,6 +13,7 @@
     "url": "https://github.com/Microsoft/cookie.gulp/issues"
   },
   "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
+  "types": "./@types",
   "dependencies": {
     "electron-packager": "^12.1.2",
     "fast-glob": "^2.2.2",

@@ -1,0 +1,23 @@
+{
+  "name": "cookie.gulp-wix",
+  "version": "1.0.0-private",
+  "description": "WIX component for cookie.gulp.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microsoft/cookie.gulp.git"
+  },
+  "author": "Microsoft Corporation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Microsoft/cookie.gulp/issues"
+  },
+  "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
+  "dependencies": {
+    "cookie.gulp": "file:../cookie.gulp",
+    "tmp": "0.0.33"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.0"
+  }
+}

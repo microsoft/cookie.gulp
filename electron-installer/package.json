@@ -1,7 +1,7 @@
 {
-  "name": "cookie.gulp",
-  "version": "1.0.0",
-  "description": "A tasty build utility basing on gulp.js.",
+  "name": "cookie.gulp-electron-installer",
+  "version": "1.0.0-private",
+  "description": "Electron installer component for cookie.gulp.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,14 +13,10 @@
     "url": "https://github.com/Microsoft/cookie.gulp/issues"
   },
   "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
-  "types": "./index.d.ts",
   "dependencies": {
-    "fast-glob": "^2.2.2",
-    "gulp": "^4.0.0"
-  },
-  "devDependencies": {
-    "@types/gulp": "^4.0.5",
-    "@types/node": "^10.9.2",
-    "del": "^3.0.0"
+    "cookie.gulp": "file:../cookie.gulp",
+    "electron-packager": "^12.2.0",
+    "fast-glob": "^2.2.3",
+    "tmp": "0.0.33"
   }
 }

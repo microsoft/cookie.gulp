@@ -44,7 +44,7 @@ exports.applyIgnores = applyIgnores;
 
 /**
  * 
- * @param  {Array.<string>} globs 
+ * @param  {...string} globs 
  * @returns {Array.<string>}
  */
 function normalizeGlobs(...globs) {
@@ -107,7 +107,7 @@ function toGlob(globlike, exts) {
 /**
  * 
  * @param {GlobLike} globlike 
- * @param {string | Array.<string>} exts 
+ * @param {string | Array.<string>} [exts]
  * @returns {Array.<string>}
  */
 function toGlobs(globlike, exts) {

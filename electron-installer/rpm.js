@@ -9,10 +9,10 @@ const tmp = require("tmp");
 const glob = require("fast-glob");
 const path = require("path");
 
-const log = require("../../log");
-const globUtils = require("../../glob-utils");
-const dd = require("../../dynamic-dependency");
-const { vinyl } = require("../../file-system");
+const log = require("cookie.gulp/log");
+const globUtils = require("cookie.gulp/glob-utils");
+const dd = require("cookie.gulp/dynamic-dependency");
+const { vinyl } = require("cookie.gulp/file-system");
 
 /** @type {string} */
 const InstallerDepName = "electron-installer-redhat";

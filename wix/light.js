@@ -13,7 +13,7 @@ function light(options) {
     const { Transform } = require("stream");
     const path = require("path");
     const tmp = require("tmp");
-    const utils = require("cookie.gulp/utilities");
+    const utils = require("cookie.gulp/utils");
     const { exec } = require("child_process");
     const fs = require("fs");
     const { vinyl } = require("cookie.gulp/file-system");

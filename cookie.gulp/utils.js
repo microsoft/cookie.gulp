@@ -7,7 +7,7 @@
 /**
  * Check if value is number or not.
  * @param {*} value The value to check.
- * @returns {boolean} True if value is number. Otherwise, false.
+ * @returns {value is number} True if value is number. Otherwise, false.
  */
 function isNumber(value) {
     return typeof value === "number" || value instanceof Number;
@@ -17,7 +17,7 @@ exports.isNumber = isNumber;
 /**
  * Check if value is function or not.
  * @param {*} value The value to check.
- * @returns {boolean} True if value is function. Otherwise, false.
+ * @returns {value is function} True if value is function. Otherwise, false.
  */
 function isFunction(value) {
     return typeof value === "function";
@@ -27,7 +27,7 @@ exports.isFunction = isFunction;
 /**
  * Check if value is object or not.
  * @param {*} value The value to check.
- * @returns {boolean} True if value is object and not null or undefined. Otherwise, false (null).
+ * @returns {value is object} True if value is object and not null or undefined. Otherwise, false (null).
  */
 function isObject(value) {
     return value && (typeof value === "object" || value instanceof Object);
@@ -37,7 +37,7 @@ exports.isObject = isObject;
 /**
  * Check if value is string or not.
  * @param {*} value The value to check.
- * @returns {boolean} True if value is string. Otherwise, false.
+ * @returns {value is string} True if value is string. Otherwise, false.
  */
 function isString(value) {
     return typeof value === "string" || value instanceof global.String;
@@ -47,7 +47,7 @@ exports.isString = isString;
 /**
  * Check if value is null or undefined.
  * @param {*} value The value to check.
- * @returns {boolean} True if value is null or undefined. Otherwise, false.
+ * @returns {value is null | undefined} True if value is null or undefined. Otherwise, false.
  */
 function isNullOrUndefined(value) {
     return value === undefined || value === null;
@@ -222,15 +222,45 @@ exports.object = {
     }
 };
 
-/**
- * 
- * @param  {...any} args 
- * @returns {string}
- */
-String.prototype.format = function (...args) {
-    // @ts-ignore
-    return exports.string.format(this, ...args);
-};
+exports.date = {
+    /**
+     * Format the current date.
+     * @param {Date} date The data to format.
+     * @param {string} format The date format.
+     * @returns {string} The formatted date.
+     */
+    format(date, format) {
+        return format
+            // Year
+            .replace("yyyy", padLeft(date.getFullYear(), 4))
+            .replace("yy", date.getFullYear().toString().substr(2, 2))
+    
+            // Month
+            .replace("MM", padLeft(date.getMonth(), 2))
+            .replace("M", padLeft(date.getMonth(), 1))
+    
+            // Day of Month
+            .replace("dd", padLeft(date.getDate(), 2))
+            .replace("d", padLeft(date.getDate(), 1))
+    
+            // Hours
+            .replace("HH", padLeft(date.getHours(), 2))
+            .replace("H", padLeft(date.getHours(), 1))
+    
+            // Minutes
+            .replace("mm", padLeft(date.getMinutes(), 2))
+            .replace("m", padLeft(date.getMinutes(), 1))
+    
+            // Seconds
+            .replace("ss", padLeft(date.getSeconds(), 2))
+            .replace("s", padLeft(date.getSeconds(), 1))
+    
+            // Thousandths of Second
+            .replace("fff", padLeft(date.getMilliseconds(), 3))
+            .replace("ff", padLeft(date.getMilliseconds(), 2))
+            .replace("f", padLeft(date.getMilliseconds(), 1));
+    }
+}
 
 /**
  * 
@@ -241,40 +271,3 @@ String.prototype.format = function (...args) {
 function padLeft(num, length) {
     return num.toString().padStart(length, "0");
 }
-
-/**
- * @param {string} format
- * @returns {string}
- */
-Date.prototype.format = function (format) {
-    return format
-        // Year
-        .replace("yyyy", padLeft(this.getFullYear(), 4))
-        .replace("yy", this.getFullYear().toString().substr(2, 2))
-
-        // Month
-        .replace("MM", padLeft(this.getMonth(), 2))
-        .replace("M", padLeft(this.getMonth(), 1))
-
-        // Day of Month
-        .replace("dd", padLeft(this.getDate(), 2))
-        .replace("d", padLeft(this.getDate(), 1))
-
-        // Hours
-        .replace("HH", padLeft(this.getHours(), 2))
-        .replace("H", padLeft(this.getHours(), 1))
-
-        // Minutes
-        .replace("mm", padLeft(this.getMinutes(), 2))
-        .replace("m", padLeft(this.getMinutes(), 1))
-
-        // Seconds
-        .replace("ss", padLeft(this.getSeconds(), 2))
-        .replace("s", padLeft(this.getSeconds(), 1))
-
-        // Thousandths of Second
-        .replace("fff", padLeft(this.getMilliseconds(), 3))
-        .replace("ff", padLeft(this.getMilliseconds(), 2))
-        .replace("f", padLeft(this.getMilliseconds(), 1));
-};
-

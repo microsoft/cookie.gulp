@@ -8,7 +8,7 @@ const { Transform } = require("stream");
 const path = require("path");
 const ts = require("typescript");
 
-const { vinyl } = require("../../file-system");
+const { vinyl } = require("cookie.gulp/file-system");
 
 /**
  * 
@@ -56,7 +56,7 @@ function logDiagnostic(diagnostic, basePath) {
  * @param {import("typescript").CompilerOptions} options Compiler options.
  * @returns {NodeJS.ReadWriteStream} 
  */
-exports.compile = function (options) {
+function compile(options) {
     /** @type {IDictionary.<import("vinyl")>} */
     const files = {};
 
@@ -116,3 +116,4 @@ exports.compile = function (options) {
         }
     });
 }
+module.exports = compile;

@@ -8,9 +8,9 @@ const ts = require("typescript");
 const fs = require("fs");
 const tmp = require("tmp");
 
-const tsc = require("../components/tsc");
-const utils = require("../utilities");
-const log = require("../log");
+const tsc = require("./tsc");
+const utils = require("cookie.gulp/utils");
+const log = require("cookie.gulp/log");
 
 /**
  * @typedef ITsConfig
@@ -54,6 +54,6 @@ function typescript(config, buildTarget, buildInfos, packageJson) {
         throw new Error("Failed to parse tsconfig.json:compilerOptions.");
     }
 
-    return tsc.compile(compilerOptionsParseResult.options);
+    return tsc(compilerOptionsParseResult.options);
 };
 module.exports = typescript;

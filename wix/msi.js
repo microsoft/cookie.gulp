@@ -43,7 +43,7 @@ function generateMsiVersion(buildInfos) {
 
 /**
  * 
- * @param {import("cookie.gulp/@types/common").} arch 
+ * @param {NodeJS.Architecture} arch 
  * @returns {MsiArch}
  */
 function toMsiArch(arch) {

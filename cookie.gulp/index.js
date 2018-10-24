@@ -10,10 +10,13 @@ const path = require("path");
 const cp = require("child_process");
 const glob = require("fast-glob");
 
+const utils = require("./utils");
 const globUtils = require("./glob-utils");
-const utils = require("./utilities");
 const configs = require("./configs");
 const { installDynamicDependencies } = require("./dynamic-dependency");
+
+/** @type {IDictionary.<ProcessorConstructor>} */
+const processorDictionary = Object.create(null);
 
 /**
  * Execute gulp task.
@@ -133,7 +136,11 @@ function generateTaskByProcessors(taskDef, targetConfig) {
             const processorConfig = Object.assign(Object.create(null), configs.buildInfos.configs.processors[processorName], utils.isString(processorRef) ? null : processorRef);
 
             /** @type {ProcessorConstructor} */
-            const constructProcessor = require(`./processors/${processorName}`);
+            const constructProcessor = processorDictionary[processorName];
+
+            if (!constructProcessor) {
+                throw new Error(`Unknown processor: ${processorName}`);
+            }
 
             lastProcessor =
                 lastProcessor.pipe(constructProcessor(processorConfig, targetConfig, configs.buildInfos, configs.packageJson));
@@ -266,6 +273,9 @@ function importTasks(tasksPath = path.join(__dirname, "./tasks")) {
     }
 }
 
+function importProcessors() {
+}
+
 /**
  * 
  * @param {import("undertaker-registry")} registry 
@@ -275,13 +285,34 @@ function init(registry) {
         gulp.registry(registry);
     }
 
-    // Import pre-defined tasks.
-    importTasks();
-
     // Install dynamic dependencies.
     installDynamicDependencies();
+
+    // Import processors.
+    importProcessors();
+
+    // Import pre-defined tasks.
+    importTasks();
 
     // Configure tasks.
     configureTasks();
 }
 module.exports = init;
+
+/**
+ * Register a processor to cookie.gulp.
+ * @param {string} name The name of the processor.
+ * @param {ProcessorConstructor} constructor The constructor of the processor.
+ */
+function processor(name, constructor) {
+    if (!utils.isString(name)) {
+        throw new Error("name must be a string.");
+    }
+
+    if (!utils.isFunction(constructor)) {
+        throw new Error("constructor must be a function.");
+    }
+
+    processorDictionary[name] = constructor;
+}
+exports.processor = processor;

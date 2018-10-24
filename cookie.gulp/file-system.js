@@ -9,7 +9,7 @@ const path = require("path");
 const { promisify } = require("util");
 const VinylFile = require("vinyl");
 
-const utils = require("./utilities");
+const utils = require("./utils");
 
 exports.rmdirAsync = promisify(fs.rmdir);
 exports.readDirAsync = promisify(fs.readdir);

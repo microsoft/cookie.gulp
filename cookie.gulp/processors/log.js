@@ -7,7 +7,15 @@
 const { Transform } = require("stream");
 const VinylFile = require("vinyl");
 
-module.exports = () => {
+/**
+ * 
+ * @param {IProcessorConfig} config 
+ * @param {IBuildTaget} buildTarget 
+ * @param {IBuildInfos} buildInfos 
+ * @param {IPackageConfig} packageJson 
+ * @returns {NodeJS.ReadWriteStream}
+ */
+function constructProcessor(config, buildTarget, buildInfos, packageJson) {
     return new Transform({
         objectMode: true,
 
@@ -33,4 +41,5 @@ module.exports = () => {
             callback();
         }
     });
-};
+}
+module.exports = constructProcessor;

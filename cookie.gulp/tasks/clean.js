@@ -6,7 +6,7 @@
 const gulp = require("gulp");
 const glob = require("fast-glob");
 
-const utils = require("../utilities");
+const utils = require("../utils");
 const globUtils = require("../glob-utils");
 const configs = require("../configs");
 const { deleteAsync } = require("../file-system");

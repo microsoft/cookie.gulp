@@ -4,11 +4,20 @@
 //-----------------------------------------------------------------------------
 "use strict";
 
+/**
+ * @typedef IDynamicDependency
+ * @property {string} [version]
+ * @property {Array.<DepType>} [depTypes]
+ * @property {Array.<NodeJS.Architecture>} [archs]
+ * @property {Array.<NodeJS.Platform>} [platforms]
+ */
+
 const cp = require("child_process");
 const log = require("./log");
 const configs = require("./configs");
-const utils = require("./utilities");
+const utils = require("./utils");
 
+/** @type {IDictionary.<string>} */
 const ConditionMap = {
     "arch": "archs",
     "platform": "platforms"
@@ -94,7 +103,8 @@ function areConditionsMatched(depName, dep) {
   */
 function installDynamicDependency(depName, dep) {
     const npmCmd =
-        "npm install {}{} {}".format(
+        utils.string.format(
+            "npm install {}{} {}",
             depName,
             dep.version ? "@" + dep.version : "",
             Array.isArray(dep.depTypes)

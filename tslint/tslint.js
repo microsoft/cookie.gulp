@@ -7,12 +7,11 @@
 const tslint = require("tslint");
 const gtslint = require("gulp-tslint");
 const fs = require("fs");
-
-const { chain } = require("../steams-utils");
+const { chain } = require("cookie.gulp/steams-utils");
 
 /**
  * 
- * @param {IMsiProcessorConfig} config 
+ * @param {IProcessorConfig} config 
  * @param {IBuildTaget} buildTarget 
  * @param {IBuildInfos} buildInfos 
  * @param {IPackageConfig} packageJson 

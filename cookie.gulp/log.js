@@ -4,6 +4,8 @@
 //-----------------------------------------------------------------------------
 "use strict";
 
+const utils = require("./utils");
+
 /**
  * @class
  * @implements {ILog}
@@ -26,7 +28,7 @@ class Log {
      */
     write(level, ...args) {
         /** @type {string} */
-        const timestamp = `[${new Date().format("HH:mm:ss")}]`;
+        const timestamp = `[${utils.date.format(new Date(), "HH:mm:ss")}]`;
 
         switch (level) {
             case "info":

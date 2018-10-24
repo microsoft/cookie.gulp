@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const glob = require("fast-glob");
 
-const utils = require("../utilities");
+const utils = require("../utils");
 const { vinyl } = require("../file-system");
 
 /**

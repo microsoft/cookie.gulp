@@ -9,9 +9,9 @@ const tmp = require("tmp");
 const path = require("path");
 const glob = require("fast-glob");
 
-const log = require("../../log");
-const dd = require("../../dynamic-dependency");
-const { vinyl } = require("../../file-system");
+const log = require("cookie.gulp/log");
+const dd = require("cookie.gulp/dynamic-dependency");
+const { vinyl } = require("cookie.gulp/file-system");
 
 /** @type {string} */
 const InstallerDepName = "electron-installer-zip";

@@ -11,7 +11,7 @@ const tmp = require("tmp");
 const packager = require("electron-packager");
 const glob = require("fast-glob");
 
-const { vinyl } = require("../../file-system");
+const { vinyl } = require("cookie.gulp/file-system");
 
 /**
  * Convert NodeJS.Architecture to packager specific architecture.

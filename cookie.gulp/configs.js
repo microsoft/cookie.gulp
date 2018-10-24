@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 
 const log = require("./log");
-const utils = require("./utilities");
+const utils = require("./utils");
 
 /** @type {string} */
 const buildInfosJsonPath = "./buildinfos.json";

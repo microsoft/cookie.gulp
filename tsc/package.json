@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
   "dependencies": {
-    "cookie.gulp": "file:../cookie.gulp",
+    "cookie.gulp": "file:../core",
     "tmp": "0.0.33",
     "typescript": "^3.1.3"
   }

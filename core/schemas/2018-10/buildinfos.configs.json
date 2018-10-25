@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "./buildinfos.configs.json",
+    "type": "object",
+    "properties": {
+        "tasks": {
+            "$ref": "./buildinfos.configs.tasks.json"
+        },
+        "processors": {
+            "$ref": "./buildinfos.configs.processors.json"
+        }
+    }
+}

@@ -24,7 +24,6 @@ declare interface IPackageConfig extends IDictionary<any> {
     extensionDependencies?: IDictionary<string>;
 }
 
-
 declare interface IBuildPaths {
     [pathName: string]: string;
     intermediateDir?: string;
@@ -52,7 +51,7 @@ declare interface IBuildTaskDefinition {
 
 declare interface IBuildTaskGroup {
     executionModel?: ExecutionModel;
-    tasks: Array<string | IBuildTaskGroup>;
+    tasks: IBuildTasksArray;
 }
 
 declare interface IBuildTasksArray extends Array<string | IBuildTaskGroup | IBuildTasksArray> { }

@@ -1,0 +1,10 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "./buildinfos.configs.tasks.json",
+    "type": "object",
+    "properties": {
+        "clean": {
+            "$ref": "./buildinfos.configs.tasks.clean.json"
+        }
+    }
+}

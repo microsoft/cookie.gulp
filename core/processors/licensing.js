@@ -21,7 +21,7 @@ const { vinyl } = require("../file-system");
 
 /**
  * 
- * @param {*} config 
+ * @param {IProcessorConfig} config 
  * @param {IBuildTaget} buildTarget 
  * @param {IBuildInfos} buildInfos 
  * @param {IPackageConfig} packageJson

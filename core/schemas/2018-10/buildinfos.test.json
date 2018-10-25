@@ -1,0 +1,17 @@
+{
+    "$schema": "./buildinfos.json",
+    "tasks": {
+        "a": {
+            "sources": "a",
+            "base": ""
+        }
+    },
+    "targets": [
+        "darwin",
+        "dar-in@x64"
+    ],
+    "paths": {
+        "a": 56,
+        "buildDir": "asdfsadf"
+    }
+}

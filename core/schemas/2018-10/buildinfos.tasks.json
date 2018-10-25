@@ -1,0 +1,136 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "./buildinfos.tasks.json",
+    "type": "object",
+    "additionalProperties": {
+        "oneOf": [
+            {
+                "$ref": "#/definitions/buildTasksArray"
+            },
+            {
+                "$ref": "#/definitions/buildTaskGroup"
+            },
+            {
+                "$ref": "#/definitions/buildTaskDefinition"
+            }
+        ]
+    },
+    "definitions": {
+        "globLike": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "processorConfig": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "buildTaskDefinition": {
+            "type": "object",
+            "properties": {
+                "sources": {
+                    "$ref": "#/definitions/globLike"
+                },
+                "base": {
+                    "type": "string"
+                },
+                "dest": {
+                    "type": "string"
+                },
+                "ignore-target": {
+                    "type": "boolean"
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "processors": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "$ref": "#/definitions/processorConfig"
+                            },
+                            {
+                                "type": "object",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/processorConfig"
+                                    },
+                                    {
+                                        "$ref": "./buildinfos.configs.processors.pass.json"
+                                    }
+                                ]
+                            }
+                        ],
+                        "examples": [
+                            "pass",
+                            {
+                                "name": "pass"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "processors"
+            ]
+        },
+        "buildTasksArray": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/definitions/buildTaskGroup"
+                    },
+                    {
+                        "$ref": "#/definitions/buildTasksArray"
+                    }
+                ]
+            }
+        },
+        "buildTaskGroup": {
+            "type": "object",
+            "properties": {
+                "executionModel": {
+                    "type": "string",
+                    "enum": [
+                        "parallel",
+                        "series"
+                    ]
+                },
+                "tasks": {
+                    "$ref": "#/definitions/buildTasksArray"
+                }
+            },
+            "additionalItems": false
+        }
+    }
+}

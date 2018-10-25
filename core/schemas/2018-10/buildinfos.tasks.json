@@ -3,15 +3,15 @@
     "$id": "./buildinfos.tasks.json",
     "type": "object",
     "additionalProperties": {
-        "oneOf": [
+        "anyOf": [
+            {
+                "$ref": "#/definitions/buildTaskDefinition"
+            },
             {
                 "$ref": "#/definitions/buildTasksArray"
             },
             {
                 "$ref": "#/definitions/buildTaskGroup"
-            },
-            {
-                "$ref": "#/definitions/buildTaskDefinition"
             }
         ]
     },
@@ -102,10 +102,7 @@
             "items": {
                 "anyOf": [
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
+                        "type": "string"
                     },
                     {
                         "$ref": "#/definitions/buildTaskGroup"
@@ -130,6 +127,10 @@
                     "$ref": "#/definitions/buildTasksArray"
                 }
             },
+            "required": [
+                "executionModel",
+                "tasks"
+            ],
             "additionalItems": false
         }
     }

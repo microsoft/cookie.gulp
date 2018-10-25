@@ -16,10 +16,11 @@ gulp.task("clean", async () => {
     await deleteAsync(configs.buildInfos.paths.buildDir);
     await deleteAsync(configs.buildInfos.paths.publishDir);
 
-    if (configs.buildInfos.configs.tasks.clean
-        && !utils.array.isNullUndefinedOrEmpty(configs.buildInfos.configs.tasks.clean.globs)) {
-        
-            const additionalPromises =
+    /** @type {ICleanTaskConfig} */
+    const cleanTaskConfig = configs.buildInfos.configs.tasks.clean;
+
+    if (cleanTaskConfig && !utils.array.isNullUndefinedOrEmpty(cleanTaskConfig.globs)) {
+        const additionalPromises =
             glob.sync(configs.buildInfos.configs.tasks.clean.globs, { dot: true })
                 .map(
                     /** @param {string} filePath */

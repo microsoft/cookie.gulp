@@ -65,6 +65,14 @@ declare interface IBuildTaskDictionary {
     publish?: BuildTaskTree | IBuildTaskDefinition;
 }
 
+declare interface ITaskConfigs extends IDictionary<any> {
+    "clean"?: ICleanTaskConfig;
+}
+
+declare interface IProcessorConfigs extends IDictionary<any> {
+    "pass"?: IPassProcessorConfig;
+}
+
 declare interface IBuildInfos {
     productName?: string;
     executableName?: string;
@@ -77,8 +85,8 @@ declare interface IBuildInfos {
     tasks?: IBuildTaskDictionary;
 
     configs?: {
-        tasks?: IDictionary<any>;
-        processors?: IDictionary<any>;
+        tasks?: ITaskConfigs;
+        processors?: IProcessorConfigs;
     };
 
     targets?: Array<string>;

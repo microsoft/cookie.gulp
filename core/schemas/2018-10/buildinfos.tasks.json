@@ -64,7 +64,7 @@
                 "processors": {
                     "type": "array",
                     "items": {
-                        "oneOf": [
+                        "anyOf": [
                             {
                                 "type": "string"
                             },
@@ -72,7 +72,7 @@
                                 "$ref": "#/definitions/processorConfig"
                             },
                             {
-                                "type": "object",
+                                "$comment": "The config for pass processor",
                                 "allOf": [
                                     {
                                         "$ref": "#/definitions/processorConfig"
@@ -86,7 +86,8 @@
                         "examples": [
                             "pass",
                             {
-                                "name": "pass"
+                                "name": "pass",
+                                "baseDir": null
                             }
                         ]
                     }
@@ -99,10 +100,12 @@
         },
         "buildTasksArray": {
             "type": "array",
+            "description": "The group of the task to execute.",
             "items": {
                 "anyOf": [
                     {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The name of the task to execute."
                     },
                     {
                         "$ref": "#/definitions/buildTaskGroup"
@@ -111,13 +114,17 @@
                         "$ref": "#/definitions/buildTasksArray"
                     }
                 ]
-            }
+            },
+            "examples": [
+                "clean"
+            ]
         },
         "buildTaskGroup": {
             "type": "object",
             "properties": {
                 "executionModel": {
                     "type": "string",
+                    "description": "Indicates how to execute the tasks referenced. Either execute them in parallel or sequence (series).",
                     "enum": [
                         "parallel",
                         "series"

@@ -3,8 +3,14 @@
     "$id": "./buildinfos.configs.processors.pass.json",
     "type": "object",
     "properties": {
+        "name": {
+            "description": "The name of pass processor",
+            "const": "pass"
+        },
         "baseDir": {
+            "description": "The base dir for processing the passing file object.",
             "type": "string"
         }
-    }
+    },
+    "additionalProperties": false
 }

@@ -1,0 +1,157 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "./buildinfos.tasks.json",
+    "type": "object",
+    "additionalProperties": {
+        "anyOf": [
+            {
+                "$ref": "#/definitions/buildTaskDefinition"
+            },
+            {
+                "$ref": "#/definitions/buildTasksArray"
+            },
+            {
+                "$ref": "#/definitions/buildTaskGroup"
+            }
+        ]
+    },
+    "definitions": {
+        "globLike": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "processorConfig": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "buildTaskDefinition": {
+            "type": "object",
+            "properties": {
+                "sources": {
+                    "$ref": "#/definitions/globLike"
+                },
+                "base": {
+                    "type": "string"
+                },
+                "dest": {
+                    "type": "string"
+                },
+                "ignore-target": {
+                    "type": "boolean"
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "processors": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "$ref": "#/definitions/processorConfig"
+                            },
+                            {
+                                "$comment": "The config for pass processor",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/processorConfig"
+                                    },
+                                    {
+                                        "$ref": "./buildinfos.configs.processors.pass.json"
+                                    }
+                                ]
+                            }
+                        ],
+                        "examples": [
+                            "pass",
+                            {
+                                "name": "pass",
+                                "baseDir": null
+                            },
+                            "log",
+                            {
+                                "name": "log"
+                            },
+                            "licensing",
+                            {
+                                "name": "licensing"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "processors"
+            ]
+        },
+        "buildTasksArray": {
+            "type": "array",
+            "description": "The group of the task to execute.",
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "description": "The name of the task to execute."
+                    },
+                    {
+                        "$ref": "#/definitions/buildTaskGroup"
+                    },
+                    {
+                        "$ref": "#/definitions/buildTasksArray"
+                    }
+                ]
+            },
+            "examples": [
+                "clean",
+                "init",
+                "npm@install",
+                "npm@version",
+                "npm@pack",
+                "npm@dep-version"
+            ]
+        },
+        "buildTaskGroup": {
+            "type": "object",
+            "properties": {
+                "executionModel": {
+                    "type": "string",
+                    "description": "Indicates how to execute the tasks referenced. Either execute them in parallel or sequence (series).",
+                    "enum": [
+                        "parallel",
+                        "series"
+                    ]
+                },
+                "tasks": {
+                    "$ref": "#/definitions/buildTasksArray"
+                }
+            },
+            "required": [
+                "executionModel",
+                "tasks"
+            ],
+            "additionalItems": false
+        }
+    }
+}

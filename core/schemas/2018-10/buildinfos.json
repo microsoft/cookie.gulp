@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "./buildinfos.json",
+    "type": "object",
+    "properties": {
+        "productName": {
+            "type": "string"
+        },
+        "executableName": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "copyright": {
+            "type": "string"
+        },
+        "buildNumber": {
+            "type": "string"
+        },
+        "tasks": {
+            "$ref": "./buildinfos.tasks.json"
+        },
+        "configs": {
+            "$ref": "./buildinfos.configs.json"
+        },
+        "targets": {
+            "$ref": "./buildinfos.targets.json"
+        },
+        "paths": {
+            "$ref": "./buildinfos.paths.json"
+        },
+        "ignores": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

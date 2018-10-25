@@ -1,0 +1,25 @@
+{
+  "name": "cookie.gulp-electron-installer",
+  "version": "1.0.0-private",
+  "description": "Electron installer component for cookie.gulp.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microsoft/cookie.gulp.git"
+  },
+  "author": "Microsoft Corporation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Microsoft/cookie.gulp/issues"
+  },
+  "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
+  "dependencies": {
+    "cookie.gulp": "file:../core",
+    "electron-packager": "^12.2.0",
+    "fast-glob": "^2.2.3",
+    "tmp": "0.0.33"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.0"
+  }
+}

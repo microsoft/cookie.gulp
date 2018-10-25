@@ -1,0 +1,43 @@
+{
+    "$schema": "./schemas/2018-10/buildinfos.json",
+    "tasks": {
+        "copy": {
+            "sources": [
+                "**/*",
+                "!<buildRootDir>",
+                "!<buildRootDir>/**/*",
+                "!<publishDir>",
+                "!<publishDir>/**/*"
+            ],
+            "ignore-target": true,
+            "processors": []
+        },
+        "build": [
+            "init",
+            "copy",
+            "npm@version"
+        ],
+        "clean-build": [
+            "clean",
+            "build"
+        ],
+        "publish": [
+            "clean-build",
+            "npm@pack"
+        ]
+    },
+    "paths": {
+        "buildRootDir": "./build",
+        "buildDir": "./build/pkg",
+        "intermediateDir": "./build/temp",
+        "publishDir": "./publish"
+    },
+    "ignores": [
+        "buildinfos.json",
+        "gulpfile.js",
+        "jsconfig.json",
+        "package-lock.json",
+        ".vscode",
+        "node_modules"
+    ]
+}

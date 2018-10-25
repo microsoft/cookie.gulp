@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "./buildinfos.configs.tasks.clean.json",
+    "type": "object",
+    "properties": {
+        "globs": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

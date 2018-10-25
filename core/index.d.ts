@@ -8,18 +8,16 @@
 /// <reference path="./@types/config.d.ts" />
 /// <reference path="./@types/log.d.ts" />
 
-declare module "cookie.gulp" {
-    interface ICookieGulp {
-        (registry?: import("undertaker-registry")): void;
+interface ICookieGulp {
+    (registry?: import("undertaker-registry")): void;
 
-        /**
-         * Register a processor to cookie.gulp.
-         * @param name The name of the processor.
-         * @param constructor The constructor of the processor.
-         */
-        processor(name: string, constructor: ProcessorConstructor): void;
-    }
-
-    declare var CookieGulp: ICookieGulp;
-    declare export = CookieGulp;
+    /**
+     * Register a processor to cookie.gulp.
+     * @param name The name of the processor.
+     * @param constructor The constructor of the processor.
+     */
+    processor(name: string, constructor: ProcessorConstructor): void;
 }
+
+declare var CookieGulp: ICookieGulp;
+declare export = CookieGulp;

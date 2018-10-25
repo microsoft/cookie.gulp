@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "linuxInstallerProcessorConfig": {
+            "type": "object",
+            "properties": {
+                "section": {
+                    "type": "string"
+                },
+                "icons": {
+                    "$ref": "../../../core/schemas/2018-10/buildinfos.tasks.json#/definitions/globLike"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "packProcessorConfig": {
+            "type": "object",
+            "properties": {
+                "asar": {
+                    "type": "boolean"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string",
+                    "enum": [
+                        "files",
+                        "dir"
+                    ]
+                },
+                "macOS": {
+                    "type": "object",
+                    "properties": {
+                        "appBundleId": {
+                            "type": "string"
+                        },
+                        "appCategoryType": {
+                            "type": "string"
+                        },
+                        "helperBundleId": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "appBundleId",
+                        "appCategoryType"
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -28,3 +28,16 @@ declare interface ICandleOptions {
     arch?: "x86" | "x64" | "ia64";
     variables?: IDictionary<string>;
 }
+
+// *** If change this interface, please also change wix.schema.json. ***
+declare interface IMsiProcessorConfig {
+    autoGenerateComponentGuids?: boolean;
+    generateGuidsNow?: boolean;
+    keepEmptyFolders?: boolean;
+    rootDirectory?: string;
+    componentGroupName?: string;
+    xsltTemplatePath?: string;
+    wxs: GlobLike;
+    variables?: IDictionary<string>;
+    spdb?: boolean;
+}

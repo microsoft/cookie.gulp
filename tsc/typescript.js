@@ -34,7 +34,7 @@ function loadTsConfigJson() {
 
 /**
  * 
- * @param {IMsiProcessorConfig} config 
+ * @param {IProcessorConfig} config 
  * @param {IBuildTaget} buildTarget 
  * @param {IBuildInfos} buildInfos 
  * @param {IPackageConfig} packageJson 

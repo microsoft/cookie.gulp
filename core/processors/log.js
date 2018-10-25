@@ -6,6 +6,7 @@
 
 const { Transform } = require("stream");
 const VinylFile = require("vinyl");
+const path = require("path");
 
 /**
  * 
@@ -43,3 +44,5 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
     });
 }
 module.exports = constructProcessor;
+
+require("..").processor(path.basename(__filename, path.extname(__filename)), constructProcessor);

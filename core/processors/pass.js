@@ -31,3 +31,5 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
     });
 }
 module.exports = constructProcessor;
+
+require("..").processor(path.basename(__filename, path.extname(__filename)), constructProcessor);

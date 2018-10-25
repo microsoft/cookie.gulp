@@ -242,38 +242,68 @@ function configureTasks() {
     }
 }
 
-/**
- * 
- * @param {string} tasksPath 
- */
-function importTasks(tasksPath = path.join(__dirname, "./tasks")) {
-    tasksPath = path.resolve(tasksPath);
+function importBuiltInExtensions() {
+    /** @type {Array.<string>} */
+    const backlog = [
+        path.join(__dirname, "tasks"),
+        path.join(__dirname, "processors")
+    ];
 
-    try {
-        const stat = fs.statSync(tasksPath);
+    /** @type {string} */
+    let currentItem;
+
+    while (currentItem = backlog.shift()) {
+        if (!fs.existsSync(currentItem)) {
+            continue;
+        }
+
+        const stat = fs.statSync(currentItem);
 
         if (stat.isDirectory()) {
-
-            if (fs.existsSync(path.join(tasksPath, "package.json"))
-                || fs.existsSync(path.join(tasksPath, "index.js"))) {
-                require(tasksPath);
+            if (fs.existsSync(path.join(currentItem, "package.json"))
+                || fs.existsSync(path.join(currentItem, "index.js"))) {
+                require(currentItem);
 
             } else {
-                fs.readdirSync(tasksPath).forEach((subItem) => importTasks(path.join(tasksPath, subItem)));
+                backlog.push(...fs.readdirSync(currentItem).map((entry) => path.join(currentItem, entry)));
             }
-        } else if (stat.isFile) {
-            require(tasksPath);
-        }
-    } catch (error) {
-        if (error && error.code && error.code === "ENOENT") {
-            return;
-        }
 
-        throw error;
+        } else if (stat.isFile() && path.extname(currentItem) === ".js") {
+            require(currentItem);
+        }
     }
 }
 
-function importProcessors() {
+function importExtensions() {
+    /** @type {Array.<string>} */
+    const backlog = [];
+
+    // @ts-ignore;
+    for (const nodeModulesDir of module.paths) {
+        if (fs.existsSync(nodeModulesDir)) {
+            backlog.push(nodeModulesDir);
+        }
+    }
+
+    /** @type {string} */
+    let currentItem;
+    const cookieGulpExtensionRegex = /^cookie\.gulp\-.+$/i;
+
+    while (currentItem = backlog.shift()) {
+        const stat = fs.statSync(currentItem);
+
+        if (!stat.isDirectory()) {
+            continue;
+        }
+
+        for (const entry of fs.readdirSync(currentItem)) {
+            if (!cookieGulpExtensionRegex.test(entry)) {
+                continue;
+            }
+
+            require(path.join(currentItem, entry));
+        }
+    }
 }
 
 /**
@@ -288,11 +318,11 @@ function init(registry) {
     // Install dynamic dependencies.
     installDynamicDependencies();
 
-    // Import processors.
-    importProcessors();
+    // Import built-in extensions.
+    importBuiltInExtensions();
 
-    // Import pre-defined tasks.
-    importTasks();
+    // Import extensions.
+    importExtensions();
 
     // Configure tasks.
     configureTasks();

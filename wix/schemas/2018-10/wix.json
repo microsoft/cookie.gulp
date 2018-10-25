@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "autoGenerateComponentGuids": {
+            "type": "boolean"
+        },
+        "generateGuidsNow": {
+            "type": "boolean"
+        },
+        "keepEmptyFolders": {
+            "type": "boolean"
+        },
+        "rootDirectory": {
+            "type": "string"
+        },
+        "componentGroupName": {
+            "type": "string"
+        },
+        "xsltTemplatePath": {
+            "type": "string"
+        },
+        "wxs": {
+            "$ref": "../../../core/schemas/2018-10/buildinfos.tasks.json#/definitions/globLike"
+        },
+        "variables": {
+            "type": "object",
+            "additionalItems": {
+                "type": "string"
+            }
+        },
+        "spdb": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "wxs"
+    ]
+}

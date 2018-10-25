@@ -4,23 +4,10 @@
 //-----------------------------------------------------------------------------
 "use strict";
 
-/** 
- * @typedef IMsiProcessorConfig
- * @property {boolean} [autoGenerateComponentGuids]
- * @property {boolean} [generateGuidsNow]
- * @property {boolean} [keepEmptyFolders]
- * @property {string} [rootDirectory]
- * @property {string} [componentGroupName]
- * @property {string} [xsltTemplatePath]
- * @property {GlobLike} wxs
- * @property {IDictionary.<string>} [variables]
- * @property {boolean} [spdb]
+/**
+ * @typedef {"x86"|"x64"|"ia64"} MsiArch
+ * 
  */
-
- /**
-  * @typedef {"x86"|"x64"|"ia64"} MsiArch
-  * 
-  */
 
 /** @type {string} */
 const VarName_MsiVersion = "MSIVERSION";

@@ -5,6 +5,9 @@
     "properties": {
         "clean": {
             "$ref": "./buildinfos.configs.tasks.clean.json"
+        },
+        "npm@dep-version": {
+            "$ref": "./buildinfos.configs.tasks.npm@dep-version.json"
         }
     }
 }

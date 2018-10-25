@@ -37,8 +37,8 @@ bower_components
 build/Release
 
 # build/publish directories
-/build/
-/publish/
+build/
+publish/
 
 # Dependency directories
 node_modules/

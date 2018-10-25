@@ -88,6 +88,14 @@
                             {
                                 "name": "pass",
                                 "baseDir": null
+                            },
+                            "log",
+                            {
+                                "name": "log"
+                            },
+                            "licensing",
+                            {
+                                "name": "licensing"
                             }
                         ]
                     }
@@ -116,7 +124,12 @@
                 ]
             },
             "examples": [
-                "clean"
+                "clean",
+                "init",
+                "npm@install",
+                "npm@version",
+                "npm@pack",
+                "npm@dep-version"
             ]
         },
         "buildTaskGroup": {

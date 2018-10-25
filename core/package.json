@@ -1,7 +1,8 @@
 {
   "name": "cookie.gulp",
-  "version": "1.0.0",
+  "version": "1.0.0-private",
   "description": "A tasty build utility basing on gulp.js.",
+  "types": "./index.d.ts",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,7 +14,6 @@
     "url": "https://github.com/Microsoft/cookie.gulp/issues"
   },
   "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
-  "types": "./index.d.ts",
   "dependencies": {
     "fast-glob": "^2.2.2",
     "gulp": "^4.0.0"

@@ -6,4 +6,4 @@
 
 const gulp = require("gulp");
 
-require(".")(gulp.registry());
+require("cookie.gulp")(gulp.registry());

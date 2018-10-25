@@ -18,5 +18,8 @@
     "electron-packager": "^12.2.0",
     "fast-glob": "^2.2.3",
     "tmp": "0.0.33"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.0"
   }
 }

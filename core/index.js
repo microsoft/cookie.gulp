@@ -345,4 +345,4 @@ function processor(name, constructor) {
 
     processorDictionary[name] = constructor;
 }
-exports.processor = processor;
+module.exports.processor = processor;

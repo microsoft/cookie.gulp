@@ -1,0 +1,52 @@
+{
+    "$schema": "../core/schemas/2018-10/buildinfos.json",
+    "configs": {
+        "tasks": {
+            "npm@dep-version": {
+                "depNamePatterns": "^cookie\\.gulp$",
+                "distTag": "latest"
+            }
+        }
+    },
+    "tasks": {
+        "copy": {
+            "sources": [
+                "**/*",
+                "!<buildRootDir>",
+                "!<buildRootDir>/**/*",
+                "!<publishDir>",
+                "!<publishDir>/**/*"
+            ],
+            "ignore-target": true,
+            "processors": []
+        },
+        "build": [
+            "init",
+            "copy",
+            "npm@version"
+        ],
+        "clean-build": [
+            "clean",
+            "build"
+        ],
+        "publish": [
+            "clean-build",
+            "npm@dep-version",
+            "npm@pack"
+        ]
+    },
+    "paths": {
+        "buildRootDir": "./build",
+        "buildDir": "./build/pkg",
+        "intermediateDir": "./build/temp",
+        "publishDir": "./publish"
+    },
+    "ignores": [
+        "buildinfos.json",
+        "gulpfile.js",
+        "jsconfig.json",
+        "package-lock.json",
+        ".vscode",
+        "node_modules"
+    ]
+}

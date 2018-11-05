@@ -6,12 +6,48 @@
 const gulp = require("gulp");
 const fs = require("fs");
 const path = require("path");
-
 const utils = require("donuts.node/utils");
 const configs = require("../configs");
 const { execSync } = require("child_process");
 
 const TaskName = "npm@dep-version";
+
+/**
+ *  
+ * @param {string} depName
+ * @param {string} distTag 
+ * @return {string}
+ */
+function getVersionFromNpm(depName, distTag) {
+    /** @type {string} */
+    const npmcmdFormat = `npm view {}@${distTag} version`;
+
+    const npmcmd = utils.string.format(npmcmdFormat, depName);
+
+    /** @type {string} */
+    let distTagVersion;
+
+    console.log("NPM", "Executing", `${configs.buildInfos.paths.buildDir}> ${npmcmd}`);
+    console.log(distTagVersion = execSync(npmcmd, { cwd: configs.buildInfos.paths.buildDir, encoding: "utf8" }).trim());
+
+    return distTagVersion;
+}
+
+/**
+ *  
+ * @param {string} depName
+ * @param {string} distTag 
+ * @return {string}
+ */
+function getVersionByGithubRelease(depName, distTag) {
+    const matches = /^\@github-release\:([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})\:([a-z0-9\-_\.]+)$/i.exec(distTag);
+
+    if (!matches) {
+        throw new Error(`disgTag, "${distTag}", is invalid. (Format: @github:<org>:<repo>)`);
+    }
+
+    return `https://github.com/${matches[1]}/${matches[2]}/releases/download/${depName}-${configs.buildInfos.buildNumber}/${depName}-${configs.buildInfos.buildNumber}.tgz`;
+}
 
 /** 
  * @typedef INpmDepVersionTaskConfig
@@ -45,9 +81,6 @@ gulp.task(TaskName, async () => {
         return;
     }
 
-    /** @type {string} */
-    const npmcmdFormat = `npm view {}@${distTag} version`;
-
     /** @type {IPackageConfig} */
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: "utf8" }));
 
@@ -57,15 +90,17 @@ gulp.task(TaskName, async () => {
             continue;
         }
 
-        const npmcmd = utils.string.format(npmcmdFormat, depName);
-
         /** @type {string} */
-        let distTagVersion;
+        let depVersion;
 
-        console.log("NPM", "Executing", `${configs.buildInfos.paths.buildDir}> ${npmcmd}`);
-        console.log(distTagVersion = execSync(npmcmd, { cwd: configs.buildInfos.paths.buildDir, encoding: "utf8" }).trim());
+        if (distTag.startsWith("@github-release")) {
+            depVersion = getVersionByGithubRelease(depName, distTag);
 
-        packageJson.dependencies[depName] = `^${distTagVersion}`;
+        } else {
+            depVersion = getVersionFromNpm(depName, distTag);
+        }
+
+        packageJson.dependencies[depName] = `^${depVersion}`;
     }
 
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4));

@@ -6,13 +6,13 @@
 const gulp = require("gulp");
 
 const configs = require("../configs");
-const fs = require("../file-system");
+const fs = require("donuts.node/fileSystem");
 const gulpUtils = require("../glob-utils");
 
 gulp.task("init", () => {
     for (const path of Object.values(configs.buildInfos.paths)) {
         if (!gulpUtils.Regex.GlobLike.test(path)) {
-            fs.createDirectory(path);
+            fs.createDirectorySync(path);
         }
     }
 

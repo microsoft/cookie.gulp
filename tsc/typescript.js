@@ -9,7 +9,7 @@ const fs = require("fs");
 const tmp = require("tmp");
 
 const tsc = require("./tsc");
-const utils = require("cookie.gulp/utils");
+const utils = require("donuts.node/utils");
 const log = require("cookie.gulp/log");
 
 /**

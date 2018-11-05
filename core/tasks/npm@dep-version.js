@@ -7,7 +7,7 @@ const gulp = require("gulp");
 const fs = require("fs");
 const path = require("path");
 
-const utils = require("../utils");
+const utils = require("donuts.node/utils");
 const configs = require("../configs");
 const { execSync } = require("child_process");
 

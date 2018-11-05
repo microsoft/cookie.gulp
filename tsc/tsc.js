@@ -8,7 +8,7 @@ const { Transform } = require("stream");
 const path = require("path");
 const ts = require("typescript");
 
-const { vinyl } = require("cookie.gulp/file-system");
+const vinyl = require("cookie.gulp/vinyl");
 
 /**
  * 

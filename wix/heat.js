@@ -13,10 +13,10 @@ function heat(options) {
     const { Transform } = require("stream");
     const path = require("path");
     const tmp = require("tmp");
-    const utils = require("cookie.gulp/utils");
+    const utils = require("donuts.node/utils");
     const { exec } = require("child_process");
     const fs = require("fs");
-    const { vinyl } = require("cookie.gulp/file-system");
+    const vinyl = require("cookie.gulp/vinyl");
     
     options = options || Object.create(null);
     options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;

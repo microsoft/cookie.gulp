@@ -15,7 +15,7 @@ function candle(options) {
     const tmp = require("tmp");
     const { exec } = require("child_process");
     const fs = require("fs");
-    const { vinyl } = require("cookie.gulp/file-system");
+    const vinyl = require("cookie.gulp/vinyl");
 
     options = options || Object.create(null);
     options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;

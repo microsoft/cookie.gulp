@@ -7,9 +7,7 @@
 const ts = require("typescript");
 const fs = require("fs");
 const tmp = require("tmp");
-
 const tsc = require("./tsc");
-const utils = require("donuts.node/utils");
 const log = require("cookie.gulp/log");
 
 /**
@@ -43,7 +41,7 @@ function loadTsConfigJson() {
 function typescript(config, buildTarget, buildInfos, packageJson) {
     const tsconfig = loadTsConfigJson();
 
-    if (utils.string.isNullUndefinedOrWhitespaces(tsconfig.compilerOptions.outDir)) {
+    if (!tsconfig.compilerOptions.outDir) {
         tsconfig.compilerOptions.outDir = tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name;
     }
 

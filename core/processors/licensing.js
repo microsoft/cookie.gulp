@@ -102,7 +102,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
                 Object.assign(dependencies, packageJson.dependencies);
             }
 
-            if (!utils.isNullOrUndefined(packageJson.dependencies)
+            if (!utils.isNullOrUndefined(packageJson.bundleDependencies)
                 && !utils.object.isEmpty(packageJson.bundleDependencies)) {
                 Object.assign(dependencies, packageJson.bundleDependencies);
             }

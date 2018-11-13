@@ -17,7 +17,12 @@
             ]
         },
         "distTag": {
-            "type": "string"
+            "type": "string",
+            "examples": [
+                "latest",
+                "next",
+                "@github-release:<org>:<repo>"
+            ]
         }
     }
 }

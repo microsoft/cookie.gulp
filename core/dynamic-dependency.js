@@ -15,7 +15,7 @@
 const cp = require("child_process");
 const log = require("./log");
 const configs = require("./configs");
-const utils = require("./utils");
+const utils = require("donuts.node/utils");
 
 /** @type {IDictionary.<string>} */
 const ConditionMap = {

@@ -10,7 +10,7 @@ const path = require("path");
 const cp = require("child_process");
 const glob = require("fast-glob");
 
-const utils = require("./utils");
+const utils = require("donuts.node/utils");
 const globUtils = require("./glob-utils");
 const configs = require("./configs");
 const { installDynamicDependencies } = require("./dynamic-dependency");
@@ -128,7 +128,7 @@ function generateTaskByProcessors(taskDef, targetConfig) {
                 processorName = processorRef.name;
             }
 
-            if (utils.string.isNullUndefinedOrWhitespaces(processorName)) {
+            if (!utils.isString(processorName) || utils.string.isEmptyOrWhitespace(processorName)) {
                 throw new Error("processor name must be provided. (null/undefined/empty/whitespaces are not acceptable).");
             }
 

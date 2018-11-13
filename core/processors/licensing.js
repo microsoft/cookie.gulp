@@ -9,8 +9,8 @@ const fs = require("fs");
 const path = require("path");
 const glob = require("fast-glob");
 
-const utils = require("../utils");
-const { vinyl } = require("../file-system");
+const utils = require("donuts.node/utils");
+const vinyl = require("../vinyl");
 
 /**
  * @typedef IDepLicenseInfo
@@ -97,15 +97,18 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
             /** @type {IDictionary.<string>} */
             const dependencies = Object.create(null);
 
-            if (!utils.object.isNullUndefinedOrEmpty(packageJson.dependencies)) {
+            if (!utils.isNullOrUndefined(packageJson.dependencies)
+                && !utils.object.isEmpty(packageJson.dependencies)) {
                 Object.assign(dependencies, packageJson.dependencies);
             }
 
-            if (!utils.object.isNullUndefinedOrEmpty(packageJson.bundleDependencies)) {
+            if (!utils.isNullOrUndefined(packageJson.bundleDependencies)
+                && !utils.object.isEmpty(packageJson.bundleDependencies)) {
                 Object.assign(dependencies, packageJson.bundleDependencies);
             }
 
-            if (utils.object.isEmpty(dependencies)) {
+            if (utils.isNullOrUndefined(packageJson.dependencies)
+                || utils.object.isEmpty(dependencies)) {
                 callback();
                 return;
             }

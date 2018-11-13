@@ -6,15 +6,15 @@
 const gulp = require("gulp");
 const glob = require("fast-glob");
 
-const utils = require("../utils");
+const utils = require("donuts.node/utils");
 const globUtils = require("../glob-utils");
 const configs = require("../configs");
-const { deleteAsync } = require("../file-system");
+const { removeDirectoryAsync, removeFileAsync } = require("donuts.node/fileSystem");
 
 gulp.task("clean", async () => {
-    await deleteAsync(configs.buildInfos.paths.intermediateDir);
-    await deleteAsync(configs.buildInfos.paths.buildDir);
-    await deleteAsync(configs.buildInfos.paths.publishDir);
+    await removeDirectoryAsync(configs.buildInfos.paths.intermediateDir);
+    await removeDirectoryAsync(configs.buildInfos.paths.buildDir);
+    await removeDirectoryAsync(configs.buildInfos.paths.publishDir);
 
     /** @type {ICleanTaskConfig} */
     const cleanTaskConfig = configs.buildInfos.configs.tasks.clean;
@@ -24,13 +24,13 @@ gulp.task("clean", async () => {
             glob.sync(configs.buildInfos.configs.tasks.clean.globs, { dot: true })
                 .map(
                     /** @param {string} filePath */
-                    async (filePath) => await deleteAsync(filePath));
+                    async (filePath) => await removeFileAsync(filePath));
 
         await Promise.all(additionalPromises);
 
         for (const globItem of configs.buildInfos.configs.tasks.clean.globs) {
             if (!globUtils.Regex.GlobLike.test(globItem)) {
-                await deleteAsync(globItem);
+                await removeFileAsync(globItem);
             }
         }
     }

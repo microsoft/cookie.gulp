@@ -9,7 +9,7 @@ const path = require("path");
 
 const log = require("cookie.gulp/log");
 const dd = require("cookie.gulp/dynamic-dependency");
-const { vinyl } = require("cookie.gulp/file-system");
+const vinyl = require("cookie.gulp/vinyl");
 
 /** @type {string} */
 const InstallerDepName = "electron-installer-zip";

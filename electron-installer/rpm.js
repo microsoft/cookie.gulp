@@ -5,9 +5,9 @@
 "use strict";
 
 const { Transform, PassThrough } = require("stream");
-const tmp = require("tmp");
 const glob = require("fast-glob");
 const path = require("path");
+const fs = require("donuts.node/fileSystem");
 
 const log = require("cookie.gulp/log");
 const globUtils = require("cookie.gulp/glob-utils");
@@ -118,7 +118,7 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             const options = {
                 src: chunk.path,
-                dest: tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name,
+                dest: fs.tempDirSync(buildInfos.paths.intermediateDir),
                 arch: toInstallerArch(buildTarget.arch),
                 name: buildInfos.executableName,
                 productName: buildInfos.productName,

@@ -12,14 +12,14 @@
 function light(options) {
     const { Transform } = require("stream");
     const path = require("path");
-    const tmp = require("tmp");
+    const fileSystem = require("donuts.node/fileSystem");
     const utils = require("donuts.node/utils");
     const { exec } = require("child_process");
     const fs = require("fs");
     const vinyl = require("cookie.gulp/vinyl");
     
     options = options || Object.create(null);
-    options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;
+    options.intermediateDir = options.intermediateDir || fileSystem.tempDirSync();
 
     options.spdb = options.spdb === true;
     options.outFileName = !utils.isString(options.outFileName) || utils.string.isEmptyOrWhitespace(options.outFileName) ? "setup.msi" : options.outFileName;
@@ -36,7 +36,7 @@ function light(options) {
         flush(callback) {
             const exeLight = path.join(__dirname, "./wix/light.exe");
             const argSpdb = options.spdb ? "-spdb" : "";
-            const outDir = tmp.dirSync({ dir: options.intermediateDir, unsafeCleanup: true }).name;
+            const outDir = fileSystem.tempDirSync(options.intermediateDir);
             const argOut = path.join(outDir, options.outFileName);
             const argWxsObjs = wxsObjs.map((fileName) => `"${fileName}"`).join(" ");
             const cmdLight = `"${exeLight}" -b ${packDir} ${argSpdb} -out ${argOut} ${argWxsObjs}`;

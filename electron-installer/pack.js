@@ -7,9 +7,9 @@
 const { Transform } = require("stream");
 const fs = require("fs");
 const path = require("path");
-const tmp = require("tmp");
 const packager = require("electron-packager");
 const glob = require("fast-glob");
+const fileSytem = require("donuts.node/fileSystem");
 
 const vinyl = require("cookie.gulp/vinyl");
 
@@ -64,7 +64,7 @@ function toPackagerPlatform(platform) {
  * @returns {NodeJS.ReadWriteStream}
  */
 function constructProcessor(config, buildTarget, buildInfos, packageJson) {
-    const tempDir = tmp.dirSync({ dir: buildInfos.paths.intermediateDir, unsafeCleanup: true }).name;
+    const tempDir = fileSytem.tempDirSync(buildInfos.paths.intermediateDir);
 
     return new Transform({
         objectMode: true,

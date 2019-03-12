@@ -12,7 +12,7 @@
 function candle(options) {
     const { Transform } = require("stream");
     const path = require("path");
-    const tmp = require("tmp");
+    const fileSystem = require("donuts.node/fileSystem");
     const { exec } = require("child_process");
     const fs = require("fs");
     const vinyl = require("cookie.gulp/vinyl");
@@ -30,7 +30,7 @@ function candle(options) {
         objectMode: true,
 
         flush(callback) {
-            const wxsobjDir = tmp.dirSync({ dir: options.intermediateDir }).name;
+            const wxsobjDir = fileSystem.tempDirSync(options.intermediateDir);
             const exeCandle = path.join(__dirname, "./wix/candle.exe");
             const argSourceFiles = sourceFiles.map((file) => `"${file.path}"`).join(" ");
             const argVariables = Object.keys(options.variables).map((varName) => `-d${varName}="${options.variables[varName]}"`).join(" ");

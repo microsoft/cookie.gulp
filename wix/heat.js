@@ -12,14 +12,14 @@
 function heat(options) {
     const { Transform } = require("stream");
     const path = require("path");
-    const tmp = require("tmp");
+    const fileSystem = require("donuts.node/fileSystem");
     const utils = require("donuts.node/utils");
     const { exec } = require("child_process");
     const fs = require("fs");
     const vinyl = require("cookie.gulp/vinyl");
-    
+
     options = options || Object.create(null);
-    options.intermediateDir = options.intermediateDir || tmp.dirSync({ unsafeCleanup: true }).name;
+    options.intermediateDir = options.intermediateDir || fileSystem.tempDirSync();
 
     if (utils.isNullOrUndefined(options.componentGroupName)) {
         options.componentGroupName = "MainComponentsGroup";
@@ -33,13 +33,13 @@ function heat(options) {
     options.autoGenerateComponentGuids = options.autoGenerateComponentGuids === true;
     options.generateGuidsNow = options.generateGuidsNow === true;
 
-    const tempDir = tmp.dirSync({ dir: options.intermediateDir, unsafeCleanup: true }).name;
+    const tempDir = fileSystem.tempDirSync(options.intermediateDir);
 
     return new Transform({
         objectMode: true,
 
         flush(callback) {
-            const filesWixPath = tmp.tmpNameSync({ dir: options.intermediateDir });
+            const filesWixPath = fileSystem.tempNameSync(options.intermediateDir);
             const exeHeat = path.join(__dirname, "./wix/heat.exe");
             const argXslt = options.xsltTemplatePath ? `-t "${options.xsltTemplatePath}"` : "";
             const argKeepEmptyFolders = options.keepEmptyFolders ? "-ke" : "";

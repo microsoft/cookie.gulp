@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/Microsoft/cookie.gulp#readme",
   "dependencies": {
-    "donuts.node": "https://github.com/Microsoft/donuts.node/releases/download/donuts.node-1.0.1/donuts.node-1.0.1.tgz",
+    "donuts.node": "https://github.com/Microsoft/donuts.node/releases/download/donuts.node-1.0.3/donuts.node-1.0.3.tgz",
     "fast-glob": "^2.2.2",
     "gulp": "^4.0.0"
   },

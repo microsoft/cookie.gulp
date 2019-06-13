@@ -133,7 +133,9 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             const installer = require(InstallerDepName);
 
-            installer(options,
+            const util = require("util");
+            const callBackBasedInstaller = util.callbackify(installer(options)); 
+            callBackBasedInstaller(
                 /** @param {*} err */
                 (err) => {
                     if (err) {

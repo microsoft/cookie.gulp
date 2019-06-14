@@ -15,7 +15,7 @@ const dd = require("cookie.gulp/dynamic-dependency");
 const vinyl = require("cookie.gulp/vinyl");
 
 /** @type {string} */
-const InstallerDepName = "electron-installer-redhat";
+const InstallerDepName = "electron-installer-redhat@1.1.0";
 
 /** @type {string} */
 const ModuleName = "RPM";
@@ -132,10 +132,8 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
             };
 
             const installer = require(InstallerDepName);
-
-            const util = require("util");
-            const callBackBasedInstaller = util.callbackify(installer(options)); 
-            callBackBasedInstaller(
+            
+            installer(options,
                 /** @param {*} err */
                 (err) => {
                     if (err) {

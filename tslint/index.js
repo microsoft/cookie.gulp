@@ -6,4 +6,6 @@
 
 exports.tslint = require("./tslint");
 
-require("cookie.gulp").processor("tslint", exports.tslint);
+exports.processes = [
+    {processorName: "tslint", processor: exports.tslint},
+];

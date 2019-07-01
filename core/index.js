@@ -302,6 +302,15 @@ function importExtensions() {
             }
 
             require(path.join(currentItem, entry));
+            const t = require(path.join(currentItem, entry));
+            try {
+                // @ts-ignore;
+                t.processes.forEach(process => {
+                processor(process.processorName, process.processor)
+                })
+            }catch(e){
+                console.log(e);
+            }
         }
     }
 }

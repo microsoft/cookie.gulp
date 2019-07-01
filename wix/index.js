@@ -9,4 +9,6 @@ exports.candle = require("./candle");
 exports.light = require("./light");
 exports.msi = require("./msi");
 
-require("cookie.gulp").processor("msi", exports.msi);
+exports.processes = [
+    {processorName: "msi", processor: exports.msi},
+];

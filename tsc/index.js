@@ -7,4 +7,6 @@
 exports.compile = require("./tsc").compile;
 exports.typescript = require("./typescript");
 
-require("cookie.gulp").processor("typescript", exports.typescript);
+exports.processes = [
+    {processorName: "typescript", processor: exports.typescript},
+];

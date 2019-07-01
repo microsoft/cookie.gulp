@@ -10,11 +10,9 @@ exports.deb = require("./deb");
 exports.rpm = require("./rpm");
 exports.zip = require("./zip");
 
-(() => {
-    const cookie = require("cookie.gulp");
-
-    cookie.processor("electron/pack", exports.pack);
-    cookie.processor("electron/deb", exports.deb);
-    cookie.processor("electron/rpm", exports.rpm);
-    cookie.processor("electron/zip", exports.zip);
-})();
+exports.processes = [
+    {processorName: "electron/pack", processor: exports.pack},
+    {processorName: "electron/deb", processor: exports.deb},
+    {processorName: "electron/rpm", processor: exports.rpm},
+    {processorName: "electron/zip", processor: exports.zip},
+];

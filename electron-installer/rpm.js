@@ -133,21 +133,18 @@ function constructProcessor(config, buildTarget, buildInfos, packageJson) {
 
             const installer = require(InstallerDepName);
 
-            installer(options,
-                /** @param {*} err */
-                (err) => {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
+            installer(options).then( () => {
+                glob.sync(path.join(options.dest, "**/*"), { dot: true, onlyFiles: false })
+                .forEach(
+                    /** @param {string} fileName */
+                    (fileName) => this.push(vinyl(fileName, options.dest)));
 
-                    glob.sync(path.join(options.dest, "**/*"), { dot: true, onlyFiles: false })
-                        .forEach(
-                            /** @param {string} fileName */
-                            (fileName) => this.push(vinyl(fileName, options.dest)));
-
-                    callback();
-                });
+                callback();
+            },
+            /** @param {*} err */
+             err => {
+                callback(err);
+            })
         }
     });
 };
